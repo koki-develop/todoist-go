@@ -90,9 +90,15 @@ func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptio
 	ep := "https://api.todoist.com/rest/v1/projects"
 	j := map[string]interface{}{"name": name}
 	if opts != nil {
-		j["parent_id"] = opts.ParentID
-		j["color"] = opts.Color
-		j["favorite"] = opts.Favorite
+		if opts.ParentID != nil {
+			j["parent_id"] = *opts.ParentID
+		}
+		if opts.Color != nil {
+			j["color"] = *opts.Color
+		}
+		if opts.Favorite != nil {
+			j["favorite"] = *opts.Favorite
+		}
 	}
 	p, err := json.Marshal(j)
 	if err != nil {
@@ -128,4 +134,54 @@ func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptio
 	}
 
 	return &proj, nil
+}
+
+type UpdateProjectOptions struct {
+	RequestID *string
+	Name      *string
+	Color     *int
+	Favorite  *bool
+}
+
+func (cl *Client) UpdateProject(id int, opts *UpdateProjectOptions) error {
+	ep := fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", id)
+	j := map[string]interface{}{}
+	if opts.Name != nil {
+		j["name"] = *opts.Name
+	}
+	if opts.Color != nil {
+		j["color"] = *opts.Color
+	}
+	if opts.Favorite != nil {
+		j["favorite"] = *opts.Favorite
+	}
+	p, err := json.Marshal(j)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequest(http.MethodPost, ep, bytes.NewBuffer(p))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
+	req.Header.Set("Content-Type", "application/json")
+	if opts != nil && opts.RequestID != nil {
+		req.Header.Set("X-Request-Id", *opts.RequestID)
+	}
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		b, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return errors.New(string(b))
+	}
+
+	return nil
 }
