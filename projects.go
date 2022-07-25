@@ -75,6 +75,10 @@ func (cl *Client) GetProjects() (Projects, error) {
 	return projs, nil
 }
 
+func (cl *Client) CreateProject(name string) (*Project, error) {
+	return cl.CreateProjectWithOptions(name, nil)
+}
+
 type CreateProjectOptions struct {
 	RequestID *string
 	ParentID  *int
