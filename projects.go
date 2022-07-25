@@ -88,18 +88,14 @@ type CreateProjectOptions struct {
 
 func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptions) (*Project, error) {
 	ep := "https://api.todoist.com/rest/v1/projects"
+
 	j := map[string]interface{}{"name": name}
 	if opts != nil {
-		if opts.ParentID != nil {
-			j["parent_id"] = *opts.ParentID
-		}
-		if opts.Color != nil {
-			j["color"] = *opts.Color
-		}
-		if opts.Favorite != nil {
-			j["favorite"] = *opts.Favorite
-		}
+		addOptionalValueToMap(j, "parent_id", opts.ParentID)
+		addOptionalValueToMap(j, "color", opts.Color)
+		addOptionalValueToMap(j, "favorite", opts.Favorite)
 	}
+
 	p, err := json.Marshal(j)
 	if err != nil {
 		return nil, err
@@ -145,16 +141,12 @@ type UpdateProjectOptions struct {
 
 func (cl *Client) UpdateProject(id int, opts *UpdateProjectOptions) error {
 	ep := fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", id)
+
 	j := map[string]interface{}{}
-	if opts.Name != nil {
-		j["name"] = *opts.Name
-	}
-	if opts.Color != nil {
-		j["color"] = *opts.Color
-	}
-	if opts.Favorite != nil {
-		j["favorite"] = *opts.Favorite
-	}
+	addOptionalValueToMap(j, "name", opts.Name)
+	addOptionalValueToMap(j, "color", opts.Color)
+	addOptionalValueToMap(j, "favorite", opts.Favorite)
+
 	p, err := json.Marshal(j)
 	if err != nil {
 		return err
@@ -175,7 +167,7 @@ func (cl *Client) UpdateProject(id int, opts *UpdateProjectOptions) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusNoContent {
 		b, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return err
