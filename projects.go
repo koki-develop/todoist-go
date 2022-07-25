@@ -1,6 +1,7 @@
 package todoist
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -72,4 +73,55 @@ func (cl *Client) GetProjects() (Projects, error) {
 	}
 
 	return projs, nil
+}
+
+type CreateProjectOptions struct {
+	RequestID *string
+	ParentID  *int
+	Color     *int
+	Favorite  *bool
+}
+
+func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptions) (*Project, error) {
+	ep := "https://api.todoist.com/rest/v1/projects"
+	j := map[string]interface{}{"name": name}
+	if opts != nil {
+		j["parent_id"] = opts.ParentID
+		j["color"] = opts.Color
+		j["favorite"] = opts.Favorite
+	}
+	p, err := json.Marshal(j)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodPost, ep, bytes.NewBuffer(p))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
+	req.Header.Set("Content-Type", "application/json")
+	if opts != nil && opts.RequestID != nil {
+		req.Header.Set("X-Request-Id", *opts.RequestID)
+	}
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		b, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		return nil, errors.New(string(b))
+	}
+
+	var proj Project
+	if err := json.NewDecoder(resp.Body).Decode(&proj); err != nil {
+		return nil, err
+	}
+
+	return &proj, nil
 }
