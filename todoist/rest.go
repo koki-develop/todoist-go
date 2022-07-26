@@ -11,9 +11,15 @@ type httpAPI interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
+type restAPI interface {
+	Do(req *restRequest) (*restResponse, error)
+}
+
 type restClient struct {
 	httpAPI httpAPI
 }
+
+var _ restAPI = (*restClient)(nil)
 
 type restRequest struct {
 	URL     string
