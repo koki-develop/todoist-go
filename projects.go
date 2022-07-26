@@ -75,15 +75,15 @@ func (cl *Client) GetProjects() (Projects, error) {
 	return projs, nil
 }
 
-func (cl *Client) CreateProject(name string) (*Project, error) {
-	return cl.CreateProjectWithOptions(name, nil)
-}
-
 type CreateProjectOptions struct {
 	RequestID *string
 	ParentID  *int
 	Color     *int
 	Favorite  *bool
+}
+
+func (cl *Client) CreateProject(name string) (*Project, error) {
+	return cl.CreateProjectWithOptions(name, nil)
 }
 
 func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptions) (*Project, error) {
@@ -152,9 +152,11 @@ func (cl *Client) UpdateProject(id int, opts *UpdateProjectOptions) error {
 	ep := fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", id)
 
 	j := map[string]interface{}{}
-	addOptionalValueToMap(j, "name", opts.Name)
-	addOptionalValueToMap(j, "color", opts.Color)
-	addOptionalValueToMap(j, "favorite", opts.Favorite)
+	if opts != nil {
+		addOptionalValueToMap(j, "name", opts.Name)
+		addOptionalValueToMap(j, "color", opts.Color)
+		addOptionalValueToMap(j, "favorite", opts.Favorite)
+	}
 
 	p, err := json.Marshal(j)
 	if err != nil {
@@ -166,6 +168,42 @@ func (cl *Client) UpdateProject(id int, opts *UpdateProjectOptions) error {
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
 	req.Header.Set("Content-Type", "application/json")
+	if opts != nil && opts.RequestID != nil {
+		req.Header.Set("X-Request-Id", *opts.RequestID)
+	}
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNoContent {
+		b, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return errors.New(string(b))
+	}
+
+	return nil
+}
+
+type DeleteProjectOptions struct {
+	RequestID *string
+}
+
+func (cl *Client) DeleteProject(id int) error {
+	return cl.DeleteProjectWithOptions(id, nil)
+}
+
+func (cl *Client) DeleteProjectWithOptions(id int, opts *DeleteProjectOptions) error {
+	ep := fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", id)
+	req, err := http.NewRequest(http.MethodDelete, ep, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
 	if opts != nil && opts.RequestID != nil {
 		req.Header.Set("X-Request-Id", *opts.RequestID)
 	}
