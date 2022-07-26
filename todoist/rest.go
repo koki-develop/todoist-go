@@ -45,6 +45,7 @@ func (cl *restClient) Do(req *restRequest) (*restResponse, error) {
 			return nil, err
 		}
 		p = bytes.NewBuffer(j)
+		req.Headers["Content-Type"] = "application/json"
 	}
 	httpreq, err := http.NewRequest(req.Method, req.URL, p)
 	if err != nil {
