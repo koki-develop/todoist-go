@@ -27,13 +27,13 @@ func New(token string) *Client {
 	}
 }
 
-func (cl *Client) get(p string, params map[string]string, expectedStatus int, out interface{}) error {
+func (cl *Client) get(p string, params map[string]string, out interface{}) error {
 	ep, err := cl.buildEndpoint(p, params)
 	if err != nil {
 		return err
 	}
 
-	body, err := cl.sendRequest(ep, http.MethodGet, nil, nil, expectedStatus)
+	body, err := cl.sendRequest(ep, http.MethodGet, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -45,18 +45,15 @@ func (cl *Client) get(p string, params map[string]string, expectedStatus int, ou
 	return nil
 }
 
-func (cl *Client) post(p string, payload map[string]interface{}, expectedStatus int, reqID *string, out interface{}) error {
+func (cl *Client) post(p string, payload map[string]interface{}, reqID *string, out interface{}) error {
 	ep, err := cl.buildEndpoint(p, nil)
 	if err != nil {
 		return err
 	}
 
-	body, err := cl.sendRequest(ep, http.MethodPost, payload, reqID, expectedStatus)
+	body, err := cl.sendRequest(ep, http.MethodPost, payload, reqID)
 	if err != nil {
 		return err
-	}
-	if expectedStatus == http.StatusNoContent {
-		return nil
 	}
 
 	if err := json.NewDecoder(body).Decode(out); err != nil {
@@ -66,13 +63,26 @@ func (cl *Client) post(p string, payload map[string]interface{}, expectedStatus 
 	return nil
 }
 
-func (cl *Client) delete(p string, expectedStatus int, reqID *string) error {
+func (cl *Client) postWithoutBind(p string, payload map[string]interface{}, reqID *string) error {
 	ep, err := cl.buildEndpoint(p, nil)
 	if err != nil {
 		return err
 	}
 
-	if _, err := cl.sendRequest(ep, http.MethodDelete, nil, reqID, expectedStatus); err != nil {
+	if _, err := cl.sendRequest(ep, http.MethodPost, payload, reqID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (cl *Client) delete(p string, reqID *string) error {
+	ep, err := cl.buildEndpoint(p, nil)
+	if err != nil {
+		return err
+	}
+
+	if _, err := cl.sendRequest(ep, http.MethodDelete, nil, reqID); err != nil {
 		return err
 	}
 
@@ -116,7 +126,7 @@ func (cl *Client) buildRequest(ep, method string, payload map[string]interface{}
 	}
 }
 
-func (cl *Client) sendRequest(ep, method string, payload map[string]interface{}, reqID *string, expectedStatusCode int) (io.Reader, error) {
+func (cl *Client) sendRequest(ep, method string, payload map[string]interface{}, reqID *string) (io.Reader, error) {
 	req := cl.buildRequest(ep, method, payload, reqID)
 
 	resp, err := cl.restAPI.Do(req)
@@ -124,13 +134,13 @@ func (cl *Client) sendRequest(ep, method string, payload map[string]interface{},
 		return nil, err
 	}
 
-	if resp.StatusCode != expectedStatusCode {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		return nil, errors.New(string(b))
+	if 200 <= resp.StatusCode && resp.StatusCode <= 299 {
+		return resp.Body, nil
 	}
 
-	return resp.Body, nil
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return nil, errors.New(string(b))
 }

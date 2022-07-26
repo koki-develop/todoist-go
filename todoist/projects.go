@@ -2,7 +2,6 @@ package todoist
 
 import (
 	"fmt"
-	"net/http"
 )
 
 // Project.
@@ -43,7 +42,7 @@ type Projects []*Project
 // Returns slice containing all user projects.
 func (cl *Client) GetProjects() (Projects, error) {
 	projs := Projects{}
-	if err := cl.get("/v1/projects", nil, http.StatusOK, &projs); err != nil {
+	if err := cl.get("/v1/projects", nil, &projs); err != nil {
 		return nil, err
 	}
 
@@ -71,7 +70,7 @@ func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptio
 		reqID = opts.RequestID
 	}
 	proj := Project{}
-	if err := cl.post("/v1/projects", j, http.StatusOK, reqID, &proj); err != nil {
+	if err := cl.post("/v1/projects", j, reqID, &proj); err != nil {
 		return nil, err
 	}
 	return &proj, nil
@@ -103,7 +102,7 @@ func (cl *Client) UpdateProjectWithOptions(id int, opts *UpdateProjectOptions) e
 		reqID = opts.RequestID
 	}
 
-	if err := cl.post(fmt.Sprintf("/v1/projects/%d", id), j, http.StatusNoContent, reqID, nil); err != nil {
+	if err := cl.postWithoutBind(fmt.Sprintf("/v1/projects/%d", id), j, reqID); err != nil {
 		return err
 	}
 
@@ -123,7 +122,7 @@ func (cl *Client) DeleteProjectWithOptions(id int, opts *DeleteProjectOptions) e
 	if opts != nil {
 		reqID = opts.RequestID
 	}
-	if err := cl.delete(fmt.Sprintf("/v1/projects/%d", id), http.StatusNoContent, reqID); err != nil {
+	if err := cl.delete(fmt.Sprintf("/v1/projects/%d", id), reqID); err != nil {
 		return err
 	}
 
