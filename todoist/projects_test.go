@@ -65,3 +65,50 @@ func TestClient_GetProjects(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_CreateProject(t *testing.T) {
+	type args struct {
+		name string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		want    *Project
+		wantErr bool
+	}{
+		{
+			name: "return project when succeeded",
+			args: args{name: "NEW_PROJECT"},
+			resp: &restResponse{
+				StatusCode: http.StatusOK,
+				Body:       strings.NewReader(`{ "id": 1, "name": "NEW_PROJECT" }`),
+			},
+			want:    &Project{ID: 1, Name: "NEW_PROJECT"},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     "https://api.todoist.com/rest/v1/projects",
+				Method:  http.MethodPost,
+				Payload: map[string]interface{}{"name": tt.args.name},
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json"},
+			}).Return(tt.resp, nil)
+
+			proj, err := cl.CreateProject(tt.args.name)
+
+			if tt.wantErr {
+				assert.Nil(t, proj)
+				assert.Error(t, err)
+			} else {
+				assert.Equal(t, tt.want, proj)
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
