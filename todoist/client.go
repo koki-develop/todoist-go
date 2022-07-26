@@ -29,11 +29,10 @@ func (cl *Client) get(p string, params map[string]string, expectedStatus int, ou
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodGet, ep, nil)
+	req, err := cl.buildRequest(ep, http.MethodGet, nil, nil)
 	if err != nil {
 		return err
 	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
 
 	resp, err := new(http.Client).Do(req)
 	if err != nil {
@@ -56,24 +55,15 @@ func (cl *Client) get(p string, params map[string]string, expectedStatus int, ou
 	return nil
 }
 
-func (cl *Client) post(p string, params map[string]interface{}, expectedStatus int, reqID *string, out interface{}) error {
+func (cl *Client) post(p string, payload map[string]interface{}, expectedStatus int, reqID *string, out interface{}) error {
 	ep, err := cl.buildEndpoint(p, nil)
 	if err != nil {
 		return err
 	}
 
-	payload, err := json.Marshal(params)
+	req, err := cl.buildRequest(ep, http.MethodPost, payload, reqID)
 	if err != nil {
 		return err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, ep, bytes.NewBuffer(payload))
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
-	if reqID != nil {
-		req.Header.Set("X-Request-Id", *reqID)
 	}
 
 	resp, err := new(http.Client).Do(req)
@@ -106,13 +96,9 @@ func (cl *Client) delete(p string, expectedStatus int, reqID *string) error {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodDelete, ep, nil)
+	req, err := cl.buildRequest(ep, http.MethodDelete, nil, reqID)
 	if err != nil {
 		return err
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
-	if reqID != nil {
-		req.Header.Set("X-Request-Id", *reqID)
 	}
 
 	resp, err := new(http.Client).Do(req)
@@ -148,4 +134,27 @@ func (cl *Client) buildEndpoint(p string, params map[string]string) (string, err
 	}
 
 	return u.String(), nil
+}
+
+func (cl *Client) buildRequest(ep string, method string, payload map[string]interface{}, reqID *string) (*http.Request, error) {
+	var b io.Reader
+	if payload != nil {
+		j, err := json.Marshal(payload)
+		if err != nil {
+			return nil, err
+		}
+		b = bytes.NewBuffer(j)
+	}
+
+	req, err := http.NewRequest(method, ep, b)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
+	if reqID != nil {
+		req.Header.Set("X-Request-Id", *reqID)
+	}
+
+	return req, nil
 }
