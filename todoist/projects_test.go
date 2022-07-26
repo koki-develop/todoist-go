@@ -1,6 +1,7 @@
 package todoist
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"testing"
@@ -164,6 +165,59 @@ func TestClient_CreateProjectWithOptions(t *testing.T) {
 				assert.Error(t, err)
 			} else {
 				assert.Equal(t, tt.want, proj)
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
+
+func TestClient_UpdateProjectWithOptions(t *testing.T) {
+	type args struct {
+		id   int
+		opts *UpdateProjectOptions
+	}
+	tests := []struct {
+		name    string
+		resp    *restResponse
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "return nil when suceeded",
+			resp: &restResponse{
+				StatusCode: http.StatusNoContent,
+				Body:       strings.NewReader(""),
+			},
+			args:    args{id: 1, opts: &UpdateProjectOptions{Name: String("UPDATED_PROJECT"), Color: Int(99), Favorite: Bool(true), RequestID: String("REQUEST_ID")}},
+			wantErr: false,
+		},
+		{
+			name: "return error when request failed",
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			args:    args{id: 1, opts: &UpdateProjectOptions{Name: String("UPDATED_PROJECT"), Color: Int(99), Favorite: Bool(true), RequestID: String("REQUEST_ID")}},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", tt.args.id),
+				Method:  http.MethodPost,
+				Payload: map[string]interface{}{"name": *tt.args.opts.Name, "color": *tt.args.opts.Color, "favorite": *tt.args.opts.Favorite},
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
+			}).Return(tt.resp, nil)
+
+			err := cl.UpdateProjectWithOptions(tt.args.id, tt.args.opts)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
 				assert.NoError(t, err)
 			}
 			api.AssertExpectations(t)
