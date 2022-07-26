@@ -11,19 +11,19 @@ import (
 )
 
 const (
-	apiBaseUrl string = "https://api.todoist.com/rest/v1"
+	apiBaseUrl string = "https://api.todoist.com/rest"
 )
 
 type Client struct {
 	token string
 
-	restClient *restClient
+	restAPI restAPI
 }
 
 func New(token string) *Client {
 	return &Client{
-		token:      token,
-		restClient: newRESTClient(),
+		token:   token,
+		restAPI: newRESTClient(),
 	}
 }
 
@@ -116,7 +116,7 @@ func (cl *Client) buildRequest(ep, method string, payload map[string]interface{}
 func (cl *Client) sendRequest(ep, method string, payload map[string]interface{}, reqID *string, expectedStatusCode int) (io.Reader, error) {
 	req := cl.buildRequest(ep, method, payload, reqID)
 
-	resp, err := cl.restClient.Do(req)
+	resp, err := cl.restAPI.Do(req)
 	if err != nil {
 		return nil, err
 	}
