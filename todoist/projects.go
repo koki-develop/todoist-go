@@ -137,3 +137,12 @@ func (cl *Client) DeleteProjectWithOptions(id int, opts *DeleteProjectOptions) e
 
 	return nil
 }
+
+func (cl *Client) GetCollaborators(projectID int) (Users, error) {
+	users := Users{}
+	if err := cl.get(fmt.Sprintf("/v1/projects/%d/collaborators", projectID), nil, &users); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
