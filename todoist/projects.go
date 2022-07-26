@@ -72,9 +72,9 @@ func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptio
 	j := map[string]interface{}{"name": name}
 	var reqID *string = nil
 	if opts != nil {
-		addOptionalValueToMap(j, "parent_id", opts.ParentID)
-		addOptionalValueToMap(j, "color", opts.Color)
-		addOptionalValueToMap(j, "favorite", opts.Favorite)
+		addOptionalIntToMap(j, "parent_id", opts.ParentID)
+		addOptionalIntToMap(j, "color", opts.Color)
+		addOptionalBoolToMap(j, "favorite", opts.Favorite)
 		reqID = opts.RequestID
 	}
 	proj := Project{}
@@ -102,9 +102,9 @@ func (cl *Client) UpdateProjectWithOptions(id int, opts *UpdateProjectOptions) e
 	j := map[string]interface{}{}
 	var reqID *string = nil
 	if opts != nil {
-		addOptionalValueToMap(j, "name", opts.Name)
-		addOptionalValueToMap(j, "color", opts.Color)
-		addOptionalValueToMap(j, "favorite", opts.Favorite)
+		addOptionalStringToMap(j, "name", opts.Name)
+		addOptionalIntToMap(j, "color", opts.Color)
+		addOptionalBoolToMap(j, "favorite", opts.Favorite)
 		reqID = opts.RequestID
 	}
 
