@@ -328,3 +328,58 @@ func TestClient_DeleteProjectWithOptions(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_GetCollaborators(t *testing.T) {
+	type args struct {
+		projectID int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		want    Users
+		wantErr bool
+	}{
+		{
+			name: "should return users",
+			args: args{projectID: 1},
+			resp: &restResponse{
+				StatusCode: http.StatusOK,
+				Body:       strings.NewReader(`[{ "id": 1, "name": "USER_1", "email": "user1@example.com" }, { "id": 2, "name": "USER_2", "email": "user2@example.com" }]`),
+			},
+			want:    Users{{ID: 1, Name: "USER_1", Email: "user1@example.com"}, {ID: 2, Name: "USER_2", Email: "user2@example.com"}},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{projectID: 1},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d/collaborators", tt.args.projectID),
+				Method:  http.MethodGet,
+				Headers: map[string]string{"Authorization": "Bearer TOKEN"},
+			}).Return(tt.resp, nil)
+
+			users, err := cl.GetCollaborators(tt.args.projectID)
+
+			assert.Equal(t, tt.want, users)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
