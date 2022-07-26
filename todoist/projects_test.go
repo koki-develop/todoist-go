@@ -179,26 +179,26 @@ func TestClient_UpdateProjectWithOptions(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		resp    *restResponse
 		args    args
+		resp    *restResponse
 		wantErr bool
 	}{
 		{
 			name: "return nil when suceeded",
+			args: args{id: 1, opts: &UpdateProjectOptions{Name: String("UPDATED_PROJECT"), Color: Int(99), Favorite: Bool(true), RequestID: String("REQUEST_ID")}},
 			resp: &restResponse{
 				StatusCode: http.StatusNoContent,
 				Body:       strings.NewReader(""),
 			},
-			args:    args{id: 1, opts: &UpdateProjectOptions{Name: String("UPDATED_PROJECT"), Color: Int(99), Favorite: Bool(true), RequestID: String("REQUEST_ID")}},
 			wantErr: false,
 		},
 		{
 			name: "return error when request failed",
+			args: args{id: 1, opts: &UpdateProjectOptions{Name: String("UPDATED_PROJECT"), Color: Int(99), Favorite: Bool(true), RequestID: String("REQUEST_ID")}},
 			resp: &restResponse{
 				StatusCode: http.StatusBadRequest,
 				Body:       strings.NewReader("ERROR_RESPONSE"),
 			},
-			args:    args{id: 1, opts: &UpdateProjectOptions{Name: String("UPDATED_PROJECT"), Color: Int(99), Favorite: Bool(true), RequestID: String("REQUEST_ID")}},
 			wantErr: true,
 		},
 	}
@@ -214,6 +214,57 @@ func TestClient_UpdateProjectWithOptions(t *testing.T) {
 			}).Return(tt.resp, nil)
 
 			err := cl.UpdateProjectWithOptions(tt.args.id, tt.args.opts)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
+
+func TestClient_DeleteProject(t *testing.T) {
+	type args struct {
+		id int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		wantErr bool
+	}{
+		{
+			name: "return nil when suceeded",
+			args: args{id: 1},
+			resp: &restResponse{
+				StatusCode: http.StatusNoContent,
+				Body:       strings.NewReader(""),
+			},
+			wantErr: false,
+		},
+		{
+			name: "return error when request failed",
+			args: args{id: 1},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", tt.args.id),
+				Method:  http.MethodDelete,
+				Headers: map[string]string{"Authorization": "Bearer TOKEN"},
+			}).Return(tt.resp, nil)
+
+			err := cl.DeleteProject(tt.args.id)
 
 			if tt.wantErr {
 				assert.Error(t, err)
