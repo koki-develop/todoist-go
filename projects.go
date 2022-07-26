@@ -148,7 +148,7 @@ type UpdateProjectOptions struct {
 }
 
 // Updates the project for the given ID.
-func (cl *Client) UpdateProject(id int, opts *UpdateProjectOptions) error {
+func (cl *Client) UpdateProjectWithOptions(id int, opts *UpdateProjectOptions) error {
 	ep := fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", id)
 
 	j := map[string]interface{}{}
