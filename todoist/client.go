@@ -109,3 +109,36 @@ func (cl *Client) post(p string, params map[string]interface{}, expectedStatus i
 
 	return nil
 }
+
+func (cl *Client) delete(p string, expectedStatus int, reqID *string) error {
+	u, err := url.Parse(apiBaseUrl)
+	if err != nil {
+		return err
+	}
+	u.Path = path.Join(u.Path, p)
+
+	req, err := http.NewRequest(http.MethodDelete, u.String(), nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
+	if reqID != nil {
+		req.Header.Set("X-Request-Id", *reqID)
+	}
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != expectedStatus {
+		b, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return errors.New(string(b))
+	}
+
+	return nil
+}

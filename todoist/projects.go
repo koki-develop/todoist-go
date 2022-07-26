@@ -1,9 +1,7 @@
 package todoist
 
 import (
-	"errors"
 	"fmt"
-	"io"
 	"net/http"
 )
 
@@ -73,7 +71,7 @@ func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptio
 		reqID = opts.RequestID
 	}
 	proj := Project{}
-	if err := cl.post("/projects", j, http.StatusOK, reqID, &proj); err != nil {
+	if err := cl.post("/v1/projects", j, http.StatusOK, reqID, &proj); err != nil {
 		return nil, err
 	}
 	return &proj, nil
@@ -105,7 +103,7 @@ func (cl *Client) UpdateProjectWithOptions(id int, opts *UpdateProjectOptions) e
 		reqID = opts.RequestID
 	}
 
-	if err := cl.post(fmt.Sprintf("/projects/%d", id), j, http.StatusNoContent, reqID, nil); err != nil {
+	if err := cl.post(fmt.Sprintf("/v1/projects/%d", id), j, http.StatusNoContent, reqID, nil); err != nil {
 		return err
 	}
 
@@ -121,28 +119,12 @@ func (cl *Client) DeleteProject(id int) error {
 }
 
 func (cl *Client) DeleteProjectWithOptions(id int, opts *DeleteProjectOptions) error {
-	ep := fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", id)
-	req, err := http.NewRequest(http.MethodDelete, ep, nil)
-	if err != nil {
+	var reqID *string = nil
+	if opts != nil {
+		reqID = opts.RequestID
+	}
+	if err := cl.delete(fmt.Sprintf("/v1/projects/%d", id), http.StatusNoContent, reqID); err != nil {
 		return err
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
-	if opts != nil && opts.RequestID != nil {
-		req.Header.Set("X-Request-Id", *opts.RequestID)
-	}
-
-	resp, err := new(http.Client).Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusNoContent {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		return errors.New(string(b))
 	}
 
 	return nil
