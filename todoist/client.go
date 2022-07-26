@@ -104,6 +104,9 @@ func (cl *Client) buildRequest(ep, method string, payload map[string]interface{}
 	if reqID != nil {
 		h["X-Request-Id"] = *reqID
 	}
+	if payload != nil {
+		h["Content-Type"] = "application/json"
+	}
 
 	return &restRequest{
 		URL:     ep,
