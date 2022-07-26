@@ -14,8 +14,6 @@ func newClientForTest() (*Client, *mockRestAPI) {
 }
 
 func TestClient_GetProjects(t *testing.T) {
-	cl, api := newClientForTest()
-
 	tests := []struct {
 		name    string
 		resp    *restResponse
@@ -34,9 +32,20 @@ func TestClient_GetProjects(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "return error when request failed.",
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			want:    nil,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
 			api.On("Do", &restRequest{
 				URL:     "https://api.todoist.com/rest/v1/projects",
 				Method:  http.MethodGet,
@@ -46,11 +55,10 @@ func TestClient_GetProjects(t *testing.T) {
 
 			projs, err := cl.GetProjects()
 
+			assert.Equal(t, tt.want, projs)
 			if tt.wantErr {
-				assert.Nil(t, projs)
 				assert.Error(t, err)
 			} else {
-				assert.Equal(t, tt.want, projs)
 				assert.NoError(t, err)
 			}
 			api.AssertExpectations(t)
