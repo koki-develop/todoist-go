@@ -22,7 +22,7 @@ func TestClient_GetProjects(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "return projects when succeeded.",
+			name: "should return projects",
 			resp: &restResponse{
 				StatusCode: http.StatusOK,
 				Body:       strings.NewReader(`[{ "id":1 , "name": "PROJECT_1" }, { "id":2 , "name": "PROJECT_2" }]`),
@@ -34,7 +34,7 @@ func TestClient_GetProjects(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "return error when request failed.",
+			name: "should return an error if the request fails",
 			resp: &restResponse{
 				StatusCode: http.StatusBadRequest,
 				Body:       strings.NewReader("ERROR_RESPONSE"),
@@ -79,7 +79,7 @@ func TestClient_CreateProject(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "return project when succeeded",
+			name: "should return a project",
 			args: args{name: "NEW_PROJECT"},
 			resp: &restResponse{
 				StatusCode: http.StatusOK,
@@ -88,6 +88,7 @@ func TestClient_CreateProject(t *testing.T) {
 			want:    &Project{ID: 1, Name: "NEW_PROJECT"},
 			wantErr: false,
 		},
+		// TODO
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -127,7 +128,7 @@ func TestClient_CreateProjectWithOptions(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "return project when succeeded",
+			name: "should return a project",
 			args: args{name: "NEW_PROJECT", opts: &CreateProjectOptions{ParentID: Int(2), Color: Int(30), Favorite: Bool(true), RequestID: String("REQUEST_ID")}},
 			resp: &restResponse{
 				StatusCode: http.StatusOK,
@@ -137,7 +138,7 @@ func TestClient_CreateProjectWithOptions(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "return error when request failed",
+			name: "should return an error if the request fails.",
 			args: args{name: "NEW_PROJECT", opts: &CreateProjectOptions{ParentID: Int(2), Color: Int(30), Favorite: Bool(true), RequestID: String("REQUEST_ID")}},
 			resp: &restResponse{
 				StatusCode: http.StatusBadRequest,
@@ -184,7 +185,7 @@ func TestClient_UpdateProjectWithOptions(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "return nil when suceeded",
+			name: "should return nil",
 			args: args{id: 1, opts: &UpdateProjectOptions{Name: String("UPDATED_PROJECT"), Color: Int(99), Favorite: Bool(true), RequestID: String("REQUEST_ID")}},
 			resp: &restResponse{
 				StatusCode: http.StatusNoContent,
@@ -193,7 +194,7 @@ func TestClient_UpdateProjectWithOptions(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "return error when request failed",
+			name: "should return an error if the request fails",
 			args: args{id: 1, opts: &UpdateProjectOptions{Name: String("UPDATED_PROJECT"), Color: Int(99), Favorite: Bool(true), RequestID: String("REQUEST_ID")}},
 			resp: &restResponse{
 				StatusCode: http.StatusBadRequest,
@@ -236,7 +237,7 @@ func TestClient_DeleteProject(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "return nil when suceeded",
+			name: "should return nil",
 			args: args{id: 1},
 			resp: &restResponse{
 				StatusCode: http.StatusNoContent,
@@ -245,7 +246,7 @@ func TestClient_DeleteProject(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "return error when request failed",
+			name: "should return an error if the request fails",
 			args: args{id: 1},
 			resp: &restResponse{
 				StatusCode: http.StatusBadRequest,
@@ -288,7 +289,7 @@ func TestClient_DeleteProjectWithOptions(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "return nil when succeeded",
+			name: "should return nil",
 			args: args{id: 1, opts: &DeleteProjectOptions{RequestID: String("REQUEST_ID")}},
 			resp: &restResponse{
 				StatusCode: http.StatusNoContent,
@@ -297,7 +298,7 @@ func TestClient_DeleteProjectWithOptions(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "return error when request failed",
+			name: "should return an error if the request fails",
 			args: args{id: 1, opts: &DeleteProjectOptions{RequestID: String("REQUEST_ID")}},
 			resp: &restResponse{
 				StatusCode: http.StatusBadRequest,
