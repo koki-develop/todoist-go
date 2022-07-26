@@ -29,12 +29,7 @@ func (cl *Client) get(p string, params map[string]string, expectedStatus int, ou
 		return err
 	}
 
-	req, err := cl.buildRequest(ep, http.MethodGet, nil, nil)
-	if err != nil {
-		return err
-	}
-
-	resp, err := new(http.Client).Do(req)
+	resp, err := cl.sendRequest(ep, http.MethodGet, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -61,12 +56,7 @@ func (cl *Client) post(p string, payload map[string]interface{}, expectedStatus 
 		return err
 	}
 
-	req, err := cl.buildRequest(ep, http.MethodPost, payload, reqID)
-	if err != nil {
-		return err
-	}
-
-	resp, err := new(http.Client).Do(req)
+	resp, err := cl.sendRequest(ep, http.MethodPost, payload, reqID)
 	if err != nil {
 		return err
 	}
@@ -96,12 +86,7 @@ func (cl *Client) delete(p string, expectedStatus int, reqID *string) error {
 		return err
 	}
 
-	req, err := cl.buildRequest(ep, http.MethodDelete, nil, reqID)
-	if err != nil {
-		return err
-	}
-
-	resp, err := new(http.Client).Do(req)
+	resp, err := cl.sendRequest(ep, http.MethodDelete, nil, reqID)
 	if err != nil {
 		return err
 	}
@@ -136,7 +121,7 @@ func (cl *Client) buildEndpoint(p string, params map[string]string) (string, err
 	return u.String(), nil
 }
 
-func (cl *Client) buildRequest(ep string, method string, payload map[string]interface{}, reqID *string) (*http.Request, error) {
+func (cl *Client) buildRequest(ep, method string, payload map[string]interface{}, reqID *string) (*http.Request, error) {
 	var b io.Reader
 	if payload != nil {
 		j, err := json.Marshal(payload)
@@ -157,4 +142,18 @@ func (cl *Client) buildRequest(ep string, method string, payload map[string]inte
 	}
 
 	return req, nil
+}
+
+func (cl *Client) sendRequest(ep, method string, payload map[string]interface{}, reqID *string) (*http.Response, error) {
+	req, err := cl.buildRequest(ep, method, payload, reqID)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
