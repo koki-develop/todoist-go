@@ -1,8 +1,6 @@
 package todoist
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -98,41 +96,17 @@ type UpdateProjectOptions struct {
 
 // Updates the project for the given ID.
 func (cl *Client) UpdateProjectWithOptions(id int, opts *UpdateProjectOptions) error {
-	ep := fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", id)
-
 	j := map[string]interface{}{}
+	var reqID *string = nil
 	if opts != nil {
 		addOptionalValueToMap(j, "name", opts.Name)
 		addOptionalValueToMap(j, "color", opts.Color)
 		addOptionalValueToMap(j, "favorite", opts.Favorite)
+		reqID = opts.RequestID
 	}
 
-	p, err := json.Marshal(j)
-	if err != nil {
+	if err := cl.post(fmt.Sprintf("/projects/%d", id), j, http.StatusNoContent, reqID, nil); err != nil {
 		return err
-	}
-	req, err := http.NewRequest(http.MethodPost, ep, bytes.NewBuffer(p))
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
-	req.Header.Set("Content-Type", "application/json")
-	if opts != nil && opts.RequestID != nil {
-		req.Header.Set("X-Request-Id", *opts.RequestID)
-	}
-
-	resp, err := new(http.Client).Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusNoContent {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		return errors.New(string(b))
 	}
 
 	return nil
