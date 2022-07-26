@@ -24,21 +24,12 @@ func New(token string) *Client {
 }
 
 func (cl *Client) get(p string, params map[string]string, expectedStatus int, out interface{}) error {
-	u, err := url.Parse(apiBaseUrl)
+	ep, err := cl.buildEndpoint(p, params)
 	if err != nil {
 		return err
 	}
-	u.Path = path.Join(u.Path, p)
 
-	if params != nil {
-		q := u.Query()
-		for k, v := range params {
-			q.Add(k, v)
-		}
-		u.RawQuery = q.Encode()
-	}
-
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	req, err := http.NewRequest(http.MethodGet, ep, nil)
 	if err != nil {
 		return err
 	}
@@ -66,18 +57,17 @@ func (cl *Client) get(p string, params map[string]string, expectedStatus int, ou
 }
 
 func (cl *Client) post(p string, params map[string]interface{}, expectedStatus int, reqID *string, out interface{}) error {
-	u, err := url.Parse(apiBaseUrl)
+	ep, err := cl.buildEndpoint(p, nil)
 	if err != nil {
 		return err
 	}
-	u.Path = path.Join(u.Path, p)
 
 	payload, err := json.Marshal(params)
 	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(payload))
+	req, err := http.NewRequest(http.MethodPost, ep, bytes.NewBuffer(payload))
 	if err != nil {
 		return err
 	}
@@ -111,13 +101,12 @@ func (cl *Client) post(p string, params map[string]interface{}, expectedStatus i
 }
 
 func (cl *Client) delete(p string, expectedStatus int, reqID *string) error {
-	u, err := url.Parse(apiBaseUrl)
+	ep, err := cl.buildEndpoint(p, nil)
 	if err != nil {
 		return err
 	}
-	u.Path = path.Join(u.Path, p)
 
-	req, err := http.NewRequest(http.MethodDelete, u.String(), nil)
+	req, err := http.NewRequest(http.MethodDelete, ep, nil)
 	if err != nil {
 		return err
 	}
@@ -141,4 +130,22 @@ func (cl *Client) delete(p string, expectedStatus int, reqID *string) error {
 	}
 
 	return nil
+}
+
+func (cl *Client) buildEndpoint(p string, params map[string]string) (string, error) {
+	u, err := url.Parse(apiBaseUrl)
+	if err != nil {
+		return "", err
+	}
+	u.Path = path.Join(u.Path, p)
+
+	if params != nil {
+		q := u.Query()
+		for k, v := range params {
+			q.Add(k, v)
+		}
+		u.RawQuery = q.Encode()
+	}
+
+	return u.String(), nil
 }
