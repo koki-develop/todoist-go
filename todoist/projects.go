@@ -138,6 +138,7 @@ func (cl *Client) DeleteProjectWithOptions(id int, opts *DeleteProjectOptions) e
 	return nil
 }
 
+// Returns slice containing all collaborators of a shared project.
 func (cl *Client) GetCollaborators(projectID int) (Users, error) {
 	users := Users{}
 	if err := cl.get(fmt.Sprintf("/v1/projects/%d/collaborators", projectID), nil, &users); err != nil {
