@@ -275,3 +275,55 @@ func TestClient_DeleteProject(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_DeleteProjectWithOptions(t *testing.T) {
+	type args struct {
+		id   int
+		opts *DeleteProjectOptions
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		wantErr bool
+	}{
+		{
+			name: "return nil when succeeded",
+			args: args{id: 1, opts: &DeleteProjectOptions{RequestID: String("REQUEST_ID")}},
+			resp: &restResponse{
+				StatusCode: http.StatusNoContent,
+				Body:       strings.NewReader(""),
+			},
+			wantErr: false,
+		},
+		{
+			name: "return error when request failed",
+			args: args{id: 1, opts: &DeleteProjectOptions{RequestID: String("REQUEST_ID")}},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", tt.args.id),
+				Method:  http.MethodDelete,
+				Headers: map[string]string{"Authorization": "Bearer TOKEN"},
+			}).Return(tt.resp, nil)
+
+			err := cl.DeleteProject(tt.args.id)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
