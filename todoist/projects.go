@@ -46,29 +46,8 @@ type Projects []*Project
 
 // Returns slice containing all user projects.
 func (cl *Client) GetProjects() (Projects, error) {
-	ep := "https://api.todoist.com/rest/v1/projects"
-	req, err := http.NewRequest(http.MethodGet, ep, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
-
-	resp, err := new(http.Client).Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		return nil, errors.New(string(b))
-	}
-
 	projs := Projects{}
-	if err := json.NewDecoder(resp.Body).Decode(&projs); err != nil {
+	if err := cl.get("/v1/projects", nil, http.StatusOK, &projs); err != nil {
 		return nil, err
 	}
 
