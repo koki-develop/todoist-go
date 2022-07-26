@@ -88,7 +88,16 @@ func TestClient_CreateProject(t *testing.T) {
 			want:    &Project{ID: 1, Name: "NEW_PROJECT"},
 			wantErr: false,
 		},
-		// TODO
+		{
+			name: "return an error if the request fails",
+			args: args{name: "NEW_PROJECT"},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			want:    nil,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
