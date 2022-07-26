@@ -132,13 +132,22 @@ func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptio
 	return &proj, nil
 }
 
+// Options for UpdateProject.
+// NOTE: If false specified for Favorite, Name or Color must also be specified.
+//       This is a problem on the Todoist REST API.
 type UpdateProjectOptions struct {
 	RequestID *string
-	Name      *string
-	Color     *int
-	Favorite  *bool
+
+	// Name of the project.
+	Name *string
+	// A numeric ID representing the color of the project icon.
+	// Refer to the id column in the Colors guide (https://developer.todoist.com/guides/#colors) for more info.
+	Color *int
+	// Whether the project is a favorite (a true or false value).
+	Favorite *bool
 }
 
+// Updates the project for the given ID.
 func (cl *Client) UpdateProject(id int, opts *UpdateProjectOptions) error {
 	ep := fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", id)
 
