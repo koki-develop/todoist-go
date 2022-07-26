@@ -1,7 +1,6 @@
 package todoist
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -17,10 +16,15 @@ const (
 
 type Client struct {
 	token string
+
+	restClient *restClient
 }
 
 func New(token string) *Client {
-	return &Client{token}
+	return &Client{
+		token:      token,
+		restClient: newRESTClient(),
+	}
 }
 
 func (cl *Client) get(p string, params map[string]string, expectedStatus int, out interface{}) error {
@@ -29,21 +33,12 @@ func (cl *Client) get(p string, params map[string]string, expectedStatus int, ou
 		return err
 	}
 
-	resp, err := cl.sendRequest(ep, http.MethodGet, nil, nil)
+	body, err := cl.sendRequest(ep, http.MethodGet, nil, nil, expectedStatus)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != expectedStatus {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		return errors.New(string(b))
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(out); err != nil {
+	if err := json.NewDecoder(body).Decode(out); err != nil {
 		return err
 	}
 
@@ -56,24 +51,15 @@ func (cl *Client) post(p string, payload map[string]interface{}, expectedStatus 
 		return err
 	}
 
-	resp, err := cl.sendRequest(ep, http.MethodPost, payload, reqID)
+	body, err := cl.sendRequest(ep, http.MethodPost, payload, reqID, expectedStatus)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != expectedStatus {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		return errors.New(string(b))
-	}
-	if resp.StatusCode == http.StatusNoContent {
+	if expectedStatus == http.StatusNoContent {
 		return nil
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(out); err != nil {
+	if err := json.NewDecoder(body).Decode(out); err != nil {
 		return err
 	}
 
@@ -86,18 +72,8 @@ func (cl *Client) delete(p string, expectedStatus int, reqID *string) error {
 		return err
 	}
 
-	resp, err := cl.sendRequest(ep, http.MethodDelete, nil, reqID)
-	if err != nil {
+	if _, err := cl.sendRequest(ep, http.MethodDelete, nil, reqID, expectedStatus); err != nil {
 		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != expectedStatus {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		return errors.New(string(b))
 	}
 
 	return nil
@@ -121,39 +97,37 @@ func (cl *Client) buildEndpoint(p string, params map[string]string) (string, err
 	return u.String(), nil
 }
 
-func (cl *Client) buildRequest(ep, method string, payload map[string]interface{}, reqID *string) (*http.Request, error) {
-	var b io.Reader
-	if payload != nil {
-		j, err := json.Marshal(payload)
+func (cl *Client) buildRequest(ep, method string, payload map[string]interface{}, reqID *string) *restRequest {
+	h := map[string]string{
+		"Authorization": fmt.Sprintf("Bearer %s", cl.token),
+	}
+	if reqID != nil {
+		h["X-Request-Id"] = *reqID
+	}
+
+	return &restRequest{
+		URL:     ep,
+		Method:  method,
+		Payload: payload,
+		Headers: h,
+	}
+}
+
+func (cl *Client) sendRequest(ep, method string, payload map[string]interface{}, reqID *string, expectedStatusCode int) (io.Reader, error) {
+	req := cl.buildRequest(ep, method, payload, reqID)
+
+	resp, err := cl.restClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != expectedStatusCode {
+		b, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
 		}
-		b = bytes.NewBuffer(j)
+		return nil, errors.New(string(b))
 	}
 
-	req, err := http.NewRequest(method, ep, b)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cl.token))
-	if reqID != nil {
-		req.Header.Set("X-Request-Id", *reqID)
-	}
-
-	return req, nil
-}
-
-func (cl *Client) sendRequest(ep, method string, payload map[string]interface{}, reqID *string) (*http.Response, error) {
-	req, err := cl.buildRequest(ep, method, payload, reqID)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := new(http.Client).Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
+	return resp.Body, nil
 }
