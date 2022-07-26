@@ -14,12 +14,14 @@ const (
 	apiBaseUrl string = "https://api.todoist.com/rest"
 )
 
+// Client for Todoist REST API.
 type Client struct {
 	token string
 
 	restAPI restAPI
 }
 
+// Returns new client.
 func New(token string) *Client {
 	return &Client{
 		token:   token,

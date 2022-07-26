@@ -49,17 +49,25 @@ func (cl *Client) GetProjects() (Projects, error) {
 	return projs, nil
 }
 
+// Options for creating a project.
 type CreateProjectOptions struct {
 	RequestID *string
-	ParentID  *int
-	Color     *int
-	Favorite  *bool
+
+	// Parent project ID.
+	ParentID *int
+	// A numeric ID representing the color of the project icon.
+	// Refer to the id column in the Colors guide (https://developer.todoist.com/guides/#colors) for more info.
+	Color *int
+	// Whether the project is a favorite (a true or false value).
+	Favorite *bool
 }
 
+// Create a new project and returns it.
 func (cl *Client) CreateProject(name string) (*Project, error) {
 	return cl.CreateProjectWithOptions(name, nil)
 }
 
+// Create a new project with options and returns it.
 func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptions) (*Project, error) {
 	j := map[string]interface{}{"name": name}
 	var reqID *string = nil
@@ -76,9 +84,7 @@ func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptio
 	return &proj, nil
 }
 
-// Options for UpdateProject.
-// NOTE: If false specified for Favorite, Name or Color must also be specified.
-//       This is a problem on the Todoist REST API.
+// Options for updating project.
 type UpdateProjectOptions struct {
 	RequestID *string
 
@@ -91,7 +97,7 @@ type UpdateProjectOptions struct {
 	Favorite *bool
 }
 
-// Updates the project for the given ID.
+// Updates the project for the given ID with options.
 func (cl *Client) UpdateProjectWithOptions(id int, opts *UpdateProjectOptions) error {
 	j := map[string]interface{}{}
 	var reqID *string = nil
@@ -109,14 +115,17 @@ func (cl *Client) UpdateProjectWithOptions(id int, opts *UpdateProjectOptions) e
 	return nil
 }
 
+// Options for deleting project.
 type DeleteProjectOptions struct {
 	RequestID *string
 }
 
+// Deletes a project.
 func (cl *Client) DeleteProject(id int) error {
 	return cl.DeleteProjectWithOptions(id, nil)
 }
 
+// Deletes a project with options.
 func (cl *Client) DeleteProjectWithOptions(id int, opts *DeleteProjectOptions) error {
 	var reqID *string = nil
 	if opts != nil {
