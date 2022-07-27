@@ -39,7 +39,7 @@ type Project struct {
 // List of Projects.
 type Projects []*Project
 
-// Returns slice containing all user projects.
+// Gets list containing all user projects.
 func (cl *Client) GetProjects() (Projects, error) {
 	projs := Projects{}
 	if err := cl.get("/v1/projects", nil, &projs); err != nil {
@@ -47,6 +47,15 @@ func (cl *Client) GetProjects() (Projects, error) {
 	}
 
 	return projs, nil
+}
+
+// Gets the project related to the given ID.
+func (cl *Client) GetProject(id int) (*Project, error) {
+	proj := Project{}
+	if err := cl.get(fmt.Sprintf("/v1/projects/%d", id), nil, &proj); err != nil {
+		return nil, err
+	}
+	return &proj, nil
 }
 
 // Options for creating a project.
@@ -62,15 +71,15 @@ type CreateProjectOptions struct {
 	Favorite *bool
 }
 
-// Create a new project and returns it.
+// Creates a new project and returns it.
 func (cl *Client) CreateProject(name string) (*Project, error) {
 	return cl.CreateProjectWithOptions(name, nil)
 }
 
-// Create a new project with options and returns it.
+// Creates a new project with options and returns it.
 func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptions) (*Project, error) {
 	j := map[string]interface{}{"name": name}
-	var reqID *string = nil
+	var reqID *string
 	if opts != nil {
 		addOptionalIntToMap(j, "parent_id", opts.ParentID)
 		addOptionalIntToMap(j, "color", opts.Color)
@@ -138,7 +147,7 @@ func (cl *Client) DeleteProjectWithOptions(id int, opts *DeleteProjectOptions) e
 	return nil
 }
 
-// Returns slice containing all collaborators of a shared project.
+// Get list containing all collaborators of a shared project.
 func (cl *Client) GetCollaborators(projectID int) (Users, error) {
 	users := Users{}
 	if err := cl.get(fmt.Sprintf("/v1/projects/%d/collaborators", projectID), nil, &users); err != nil {
