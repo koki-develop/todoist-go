@@ -5,6 +5,63 @@
 [![codecov](https://codecov.io/gh/koki-develop/todoist-go/branch/main/graph/badge.svg)](https://codecov.io/gh/koki-develop/todoist-go)
 [![LICENSE](https://img.shields.io/github/license/koki-develop/todoist-go)](./LICENSE)
 
-# todoist-go
+# todoist-go ( :warning: In development. :warning: )
 
-:warning: In development. :warning:
+This is a Go client library for accessing the [Todoist APIs](https://developer.todoist.com/guides/#our-apis).
+
+## Installation
+
+```
+go get github.com/koki-develop/todoist-go
+```
+
+## Example
+
+### Get all projects
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/koki-develop/todoist-go/todoist"
+)
+
+func main() {
+	client := todoist.New("TODOIST_API_TOKEN")
+
+	projects, err := client.GetProjects()
+	if err != nil {
+		fmt.Printf("%s\n", err)
+		return
+	}
+
+	for _, project := range projects {
+		fmt.Printf("ID: %d, Name: %s\n", project.ID, project.Name)
+		// ID: 1234567890, Name: Inbox
+		// ID: 2345678901, Name: Shopping List
+		// ...
+	}
+}
+```
+
+### Create a new task
+
+<!-- TODO: add -->
+wip
+
+## Reference
+
+### REST API Client
+
+- [todoist-go/todoist](https://pkg.go.dev/github.com/koki-develop/todoist-go/todoist)
+
+### Sync API Client
+
+<!-- TODO: add -->
+wip
+
+## LICENSE
+
+[MIT](./LICENSE)
