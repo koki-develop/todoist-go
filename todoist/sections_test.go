@@ -288,3 +288,110 @@ func TestClient_CreateSectionWithOptions(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_UpdateSection(t *testing.T) {
+	type args struct {
+		id   int
+		name string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		wantErr bool
+	}{
+		{
+			name: "should return nil",
+			args: args{id: 1, name: "SECTION"},
+			resp: &restResponse{
+				StatusCode: http.StatusNoContent,
+				Body:       strings.NewReader(""),
+			},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{id: 1, name: "SECTION"},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/sections/%d", tt.args.id),
+				Method:  http.MethodPost,
+				Payload: map[string]interface{}{"name": tt.args.name},
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json"},
+			}).Return(tt.resp, nil)
+
+			err := cl.UpdateSection(tt.args.id, tt.args.name)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
+
+func TestClient_UpdateSectionWithOptions(t *testing.T) {
+	type args struct {
+		id   int
+		name string
+		opts *UpdateSectionOptions
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		wantErr bool
+	}{
+		{
+			name: "should return nil",
+			args: args{id: 1, name: "SECTION", opts: &UpdateSectionOptions{RequestID: String("REQUEST_ID")}},
+			resp: &restResponse{
+				StatusCode: http.StatusNoContent,
+				Body:       strings.NewReader(""),
+			},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{id: 1, name: "SECTION", opts: &UpdateSectionOptions{RequestID: String("REQUEST_ID")}},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/sections/%d", tt.args.id),
+				Method:  http.MethodPost,
+				Payload: map[string]interface{}{"name": tt.args.name},
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
+			}).Return(tt.resp, nil)
+
+			err := cl.UpdateSectionWithOptions(tt.args.id, tt.args.name, tt.args.opts)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}

@@ -85,3 +85,28 @@ func (cl *Client) CreateSectionWithOptions(name string, projectID int, opts *Cre
 
 	return &sec, nil
 }
+
+// Options for updating section.
+type UpdateSectionOptions struct {
+	RequestID *string
+}
+
+// Updates the section for the given ID.
+func (cl *Client) UpdateSection(id int, name string) error {
+	return cl.UpdateSectionWithOptions(id, name, nil)
+}
+
+// Updates the section for the given ID with options.
+func (cl *Client) UpdateSectionWithOptions(id int, name string, opts *UpdateSectionOptions) error {
+	p := map[string]interface{}{"name": name}
+	var reqID *string
+	if opts != nil {
+		reqID = opts.RequestID
+	}
+
+	if err := cl.postWithoutBind(fmt.Sprintf("/v1/sections/%d", id), p, reqID); err != nil {
+		return err
+	}
+
+	return nil
+}
