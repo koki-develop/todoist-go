@@ -1,6 +1,7 @@
 package todoist
 
 import (
+	"fmt"
 	"strconv"
 )
 
@@ -44,6 +45,15 @@ func (cl *Client) GetSectionsWithOptions(opts *GetSectionsOptions) (Sections, er
 	}
 
 	return secs, nil
+}
+
+// Gets the section related to the given ID.
+func (cl *Client) GetSection(id int) (*Section, error) {
+	sec := Section{}
+	if err := cl.get(fmt.Sprintf("/v1/sections/%d", id), nil, &sec); err != nil {
+		return nil, err
+	}
+	return &sec, nil
 }
 
 // Options for creating section.
