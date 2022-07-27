@@ -1,6 +1,5 @@
 package todoist
 
-// User.
 type User struct {
 	// User ID.
 	ID int `json:"id"`

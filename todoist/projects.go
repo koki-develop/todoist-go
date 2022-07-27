@@ -4,7 +4,6 @@ import (
 	"fmt"
 )
 
-// Project.
 type Project struct {
 	// Project ID.
 	ID int `json:"id"`
