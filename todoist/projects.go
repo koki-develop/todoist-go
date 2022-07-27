@@ -49,6 +49,15 @@ func (cl *Client) GetProjects() (Projects, error) {
 	return projs, nil
 }
 
+// Gets the project related to the given ID.
+func (cl *Client) GetProject(id int) (*Project, error) {
+	proj := Project{}
+	if err := cl.get(fmt.Sprintf("/v1/projects/%d", id), nil, &proj); err != nil {
+		return nil, err
+	}
+	return &proj, nil
+}
+
 // Options for creating a project.
 type CreateProjectOptions struct {
 	RequestID *string

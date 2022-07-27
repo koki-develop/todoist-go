@@ -67,6 +67,62 @@ func TestClient_GetProjects(t *testing.T) {
 	}
 }
 
+func TestClient_GetProject(t *testing.T) {
+	type args struct {
+		id int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		want    *Project
+		wantErr bool
+	}{
+		{
+			name: "should return a project",
+			args: args{id: 1},
+			resp: &restResponse{
+				StatusCode: http.StatusOK,
+				Body:       strings.NewReader(`{ "id":1 , "name": "PROJECT_1" }`),
+			},
+			want:    &Project{ID: 1, Name: "PROJECT_1"},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{id: 1},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", tt.args.id),
+				Method:  http.MethodGet,
+				Payload: nil,
+				Headers: map[string]string{"Authorization": "Bearer TOKEN"},
+			}).Return(tt.resp, nil)
+
+			proj, err := cl.GetProject(tt.args.id)
+
+			assert.Equal(t, tt.want, proj)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
+
 func TestClient_CreateProject(t *testing.T) {
 	type args struct {
 		name string
