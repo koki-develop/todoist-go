@@ -11,7 +11,7 @@ This is a Go client library for accessing the [Todoist APIs](https://developer.t
 
 ## Installation
 
-```
+```sh
 go get github.com/koki-develop/todoist-go
 ```
 
@@ -51,7 +51,7 @@ func main() {
 <!-- TODO: add -->
 wip
 
-## Reference
+## Documentation
 
 ### REST API Client
 
