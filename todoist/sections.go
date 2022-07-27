@@ -5,7 +5,6 @@ import (
 	"strconv"
 )
 
-// Section.
 type Section struct {
 	// Section id.
 	ID int `json:"id"`
