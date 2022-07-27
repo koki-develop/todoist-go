@@ -45,3 +45,33 @@ func (cl *Client) GetSectionsWithOptions(opts *GetSectionsOptions) (Sections, er
 
 	return secs, nil
 }
+
+// Options for creating section.
+type CreateSectionOptions struct {
+	RequestID *string
+
+	// Order among other sections in a project.
+	Order *int
+}
+
+// Creates a new section and returns it.
+func (cl *Client) CreateSection(name string, projectID int) (*Section, error) {
+	return cl.CreateSectionWithOptions(name, projectID, nil)
+}
+
+// Creates a new section with options and returns it.
+func (cl *Client) CreateSectionWithOptions(name string, projectID int, opts *CreateSectionOptions) (*Section, error) {
+	j := map[string]interface{}{"name": name, "project_id": projectID}
+	var reqID *string
+	if opts != nil {
+		addOptionalIntToMap(j, "order", opts.Order)
+		reqID = opts.RequestID
+	}
+
+	sec := Section{}
+	if err := cl.post("/v1/sections", j, reqID, &sec); err != nil {
+		return nil, err
+	}
+
+	return &sec, nil
+}

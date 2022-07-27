@@ -39,7 +39,7 @@ type Project struct {
 // List of Projects.
 type Projects []*Project
 
-// Get list containing all user projects.
+// Gets list containing all user projects.
 func (cl *Client) GetProjects() (Projects, error) {
 	projs := Projects{}
 	if err := cl.get("/v1/projects", nil, &projs); err != nil {
@@ -62,15 +62,15 @@ type CreateProjectOptions struct {
 	Favorite *bool
 }
 
-// Create a new project and returns it.
+// Creates a new project and returns it.
 func (cl *Client) CreateProject(name string) (*Project, error) {
 	return cl.CreateProjectWithOptions(name, nil)
 }
 
-// Create a new project with options and returns it.
+// Creates a new project with options and returns it.
 func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptions) (*Project, error) {
 	j := map[string]interface{}{"name": name}
-	var reqID *string = nil
+	var reqID *string
 	if opts != nil {
 		addOptionalIntToMap(j, "parent_id", opts.ParentID)
 		addOptionalIntToMap(j, "color", opts.Color)
