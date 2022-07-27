@@ -119,6 +119,63 @@ func TestClient_GetSectionsWithOptions(t *testing.T) {
 	}
 }
 
+func TestClient_CreateSection(t *testing.T) {
+	type args struct {
+		name      string
+		projectID int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		want    *Section
+		wantErr bool
+	}{
+		{
+			name: "should return section",
+			args: args{name: "SECTION", projectID: 1},
+			resp: &restResponse{
+				StatusCode: http.StatusOK,
+				Body:       strings.NewReader(`{ "id": 1, "name": "SECTION" }`),
+			},
+			want:    &Section{ID: 1, Name: "SECTION"},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{name: "SECTION", projectID: 1},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     "https://api.todoist.com/rest/v1/sections",
+				Method:  http.MethodPost,
+				Payload: map[string]interface{}{"name": tt.args.name, "project_id": tt.args.projectID},
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json"},
+			}).Return(tt.resp, nil)
+
+			sec, err := cl.CreateSection(tt.args.name, tt.args.projectID)
+
+			assert.Equal(t, tt.want, sec)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
+
 func TestClient_CreateSectionWithOptions(t *testing.T) {
 	type args struct {
 		name      string
