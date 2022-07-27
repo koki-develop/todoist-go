@@ -395,3 +395,55 @@ func TestClient_UpdateSectionWithOptions(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_DeleteSectionWithOptions(t *testing.T) {
+	type args struct {
+		id   int
+		opts *DeleteSectionOptions
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		wantErr bool
+	}{
+		{
+			name: "should return nil",
+			args: args{id: 1, opts: &DeleteSectionOptions{RequestID: String("REQUEST_ID")}},
+			resp: &restResponse{
+				StatusCode: http.StatusNoContent,
+				Body:       strings.NewReader(""),
+			},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{id: 1, opts: &DeleteSectionOptions{RequestID: String("REQUEST_ID")}},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/sections/%d", tt.args.id),
+				Method:  http.MethodDelete,
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "X-Request-Id": *tt.args.opts.RequestID},
+			}).Return(tt.resp, nil)
+
+			err := cl.DeleteSectionWithOptions(tt.args.id, tt.args.opts)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}

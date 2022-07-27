@@ -110,3 +110,25 @@ func (cl *Client) UpdateSectionWithOptions(id int, name string, opts *UpdateSect
 
 	return nil
 }
+
+// Options for deleting a section.
+type DeleteSectionOptions struct {
+	RequestID *string
+}
+
+// Deletes the section for the given ID.
+func (cl *Client) DeleteSection(id int) error {
+	return cl.DeleteSectionWithOptions(id, nil)
+}
+
+// Deletes the section for the given ID with options.
+func (cl *Client) DeleteSectionWithOptions(id int, opts *DeleteSectionOptions) error {
+	var reqID *string
+	if opts != nil {
+		reqID = opts.RequestID
+	}
+	if err := cl.delete(fmt.Sprintf("/v1/sections/%d", id), reqID); err != nil {
+		return err
+	}
+	return nil
+}
