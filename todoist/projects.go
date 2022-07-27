@@ -39,7 +39,7 @@ type Project struct {
 // List of Projects.
 type Projects []*Project
 
-// Returns slice containing all user projects.
+// Get list containing all user projects.
 func (cl *Client) GetProjects() (Projects, error) {
 	projs := Projects{}
 	if err := cl.get("/v1/projects", nil, &projs); err != nil {
@@ -138,7 +138,7 @@ func (cl *Client) DeleteProjectWithOptions(id int, opts *DeleteProjectOptions) e
 	return nil
 }
 
-// Returns slice containing all collaborators of a shared project.
+// Get list containing all collaborators of a shared project.
 func (cl *Client) GetCollaborators(projectID int) (Users, error) {
 	users := Users{}
 	if err := cl.get(fmt.Sprintf("/v1/projects/%d/collaborators", projectID), nil, &users); err != nil {
