@@ -97,3 +97,69 @@ func (cl *Client) GetTasksWithOptions(opts *GetTasksOptions) (Tasks, error) {
 
 	return tasks, nil
 }
+
+// Options for creating task.
+// Please note that only one of the Due* fields can be used at the same time (DueLang is a special case).
+type CreateTaskOptions struct {
+	// A description for the task.
+	// This value may contain markdown-formatted text and hyperlinks.
+	// Details on markdown support can be found in the Text Formatting article (https://todoist.com/help/articles/text-formatting) in the Help Center.
+	Description *string
+	// Task project ID.
+	// If not set, task is put to user's Inbox.
+	ProjectID *int
+	// ID of section to put task into.
+	SectionID *int
+	// Parent task ID.
+	ParentID *int
+	// Non-zero integer value used by clients to sort tasks under the same parent.
+	Order *int
+	// IDs of labels associated with the task.
+	LabelIDs []int
+	// Task priority from 1 (normal) to 4 (urgent).
+	Priority *int
+	// Human defined (https://todoist.com/help/articles/due-dates-and-times) task due date (ex.: "next Monday", "Tomorrow"). Value is set using local (not UTC) time.
+	DueString *string
+	// Specific date in YYYY-MM-DD format relative to user’s timezone.
+	DueDate *string
+	// Specific date and time in RFC3339 (https://www.ietf.org/rfc/rfc3339.txt) format in UTC.
+	DueDatetime *string
+	// 2-letter code specifying language in case due_string is not written in English.
+	DueLang *string
+	// The responsible user ID (if set, and only for shared tasks).
+	Assignee *int
+}
+
+// Creates a new task and returns it.
+func (cl *Client) CreateTask(content string) (*Task, error) {
+	return cl.CreateTaskWithOptions(content, nil)
+}
+
+// Creates a new task with options and returns it.
+func (cl *Client) CreateTaskWithOptions(content string, opts *CreateTaskOptions) (*Task, error) {
+	p := map[string]interface{}{"content": content}
+	var reqID *string
+	if opts != nil {
+		addOptionalStringToMap(p, "description", opts.Description)
+		addOptionalIntToMap(p, "project_id", opts.ProjectID)
+		addOptionalIntToMap(p, "section_id", opts.SectionID)
+		addOptionalIntToMap(p, "parent_id", opts.ParentID)
+		addOptionalIntToMap(p, "order", opts.Order)
+		if len(opts.LabelIDs) > 0 {
+			ids := strings.Join(intsToStrings(opts.LabelIDs), ",")
+			addOptionalStringToMap(p, "label_ids", &ids)
+		}
+		addOptionalIntToMap(p, "priority", opts.Priority)
+		addOptionalStringToMap(p, "due_string", opts.DueString)
+		addOptionalStringToMap(p, "due_date", opts.DueDate)
+		addOptionalStringToMap(p, "due_datetime", opts.DueDatetime)
+		addOptionalStringToMap(p, "due_lang", opts.DueLang)
+		addOptionalIntToMap(p, "assignee", opts.Assignee)
+	}
+
+	task := Task{}
+	if err := cl.post("/v1/tasks", p, reqID, &task); err != nil {
+		return nil, err
+	}
+	return &task, nil
+}
