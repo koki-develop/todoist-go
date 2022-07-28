@@ -100,8 +100,8 @@ func (cl *Client) buildEndpoint(p string, params map[string]string) (string, err
 
 	if params != nil {
 		q := u.Query()
-		for k, v := range params {
-			q.Add(k, v)
+		for _, k := range getSortedKeysFromStringMap(params) {
+			q.Add(k, params[k])
 		}
 		u.RawQuery = q.Encode()
 	}
