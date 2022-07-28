@@ -1,6 +1,9 @@
 package todoist
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type Task struct {
 	// Task ID.
@@ -96,6 +99,15 @@ func (cl *Client) GetTasksWithOptions(opts *GetTasksOptions) (Tasks, error) {
 	}
 
 	return tasks, nil
+}
+
+// Get a single active task by ID.
+func (cl *Client) GetTask(id int) (*Task, error) {
+	task := Task{}
+	if err := cl.get(fmt.Sprintf("/v1/tasks/%d", id), nil, &task); err != nil {
+		return nil, err
+	}
+	return &task, nil
 }
 
 // Options for creating task.

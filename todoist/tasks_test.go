@@ -134,3 +134,58 @@ func TestClient_GetTasksWithOptions(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_GetTask(t *testing.T) {
+	type args struct {
+		id int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		want    *Task
+		wantErr bool
+	}{
+		{
+			name: "should return a task",
+			args: args{id: 1},
+			resp: &restResponse{
+				StatusCode: http.StatusOK,
+				Body:       strings.NewReader(`{ "id": 1, "content": "TASK" }`),
+			},
+			want:    &Task{ID: 1, Content: "TASK"},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{id: 1},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/tasks/%d", tt.args.id),
+				Method:  http.MethodGet,
+				Headers: map[string]string{"Authorization": "Bearer TOKEN"},
+			}).Return(tt.resp, nil)
+
+			task, err := cl.GetTask(tt.args.id)
+
+			assert.Equal(t, tt.want, task)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
