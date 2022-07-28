@@ -1,6 +1,9 @@
 package todoist
 
-import "strconv"
+import (
+	"sort"
+	"strconv"
+)
 
 // Returns a string as a pointer.
 func String(s string) *string { return &s }
@@ -47,4 +50,18 @@ func intsToStrings(is []int) []string {
 		ss = append(ss, strconv.Itoa(i))
 	}
 	return ss
+}
+
+func getKeysFromStringMap(m map[string]string) []string {
+	keys := []string{}
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
+func getSortedKeysFromStringMap(m map[string]string) []string {
+	keys := getKeysFromStringMap(m)
+	sort.Strings(keys)
+	return keys
 }
