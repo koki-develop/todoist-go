@@ -9,6 +9,18 @@
 
 This is a Go client library for accessing the [Todoist APIs](https://developer.todoist.com/guides/#our-apis).
 
+## Contents
+
+- [Installation](#installation)
+- [REST API Client](#rest-api-client)
+  - [Import](#import)
+  - [Example](#example)
+    - [Get all projects](#get-all-projects)
+    - [Create a new task](#create-a-new-task)
+  - [Documentation](#documentation)
+- [Sync API Client](#sync-api-client)
+- [LICENSE](#license)
+
 ## Installation
 
 ```sh
@@ -19,7 +31,7 @@ go get github.com/koki-develop/todoist-go
 
 `todoist-go/todoist` is a package for accessing the [Todoist REST API](https://developer.todoist.com/rest/v1).
 
-### import
+### Import
 
 ```go
 import "github.com/koki-develop/todoist-go/todoist"
@@ -111,7 +123,7 @@ func main() {
 
 ### Documentation
 
-- [todoist-go/todoist](https://pkg.go.dev/github.com/koki-develop/todoist-go/todoist)
+For more information, see [todoist-go/todoist](https://pkg.go.dev/github.com/koki-develop/todoist-go/todoist).
 
 ## Sync API Client
 
