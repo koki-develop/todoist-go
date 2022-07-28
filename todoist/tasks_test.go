@@ -245,3 +245,108 @@ func TestClient_CreateTask(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_CreateTaskWithOptions(t *testing.T) {
+	type args struct {
+		content string
+		opts    *CreateTaskOptions
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		want    *Task
+		wantErr bool
+	}{
+		{
+			name: "should return a task",
+			args: args{
+				content: "TASK",
+				opts: &CreateTaskOptions{
+					RequestID:   String("REQUEST_ID"),
+					Description: String("DESCRIPTION"),
+					ProjectID:   Int(1),
+					SectionID:   Int(2),
+					ParentID:    Int(3),
+					Order:       Int(4),
+					LabelIDs:    []int{5, 6, 7},
+					Priority:    Int(8),
+					DueString:   String("DUE_STRING"),
+					DueDate:     String("DUE_DATE"),
+					DueDatetime: String("DUE_DATETIME"),
+					DueLang:     String("DUE_LANG"),
+					Assignee:    Int(9),
+				},
+			},
+			resp: &restResponse{
+				StatusCode: http.StatusOK,
+				Body:       strings.NewReader(`{ "id": 1, "content": "TASK" }`),
+			},
+			want:    &Task{ID: 1, Content: "TASK"},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{
+				content: "TASK",
+				opts: &CreateTaskOptions{
+					RequestID:   String("REQUEST_ID"),
+					Description: String("DESCRIPTION"),
+					ProjectID:   Int(1),
+					SectionID:   Int(2),
+					ParentID:    Int(3),
+					Order:       Int(4),
+					LabelIDs:    []int{5, 6, 7},
+					Priority:    Int(8),
+					DueString:   String("DUE_STRING"),
+					DueDate:     String("DUE_DATE"),
+					DueDatetime: String("DUE_DATETIME"),
+					DueLang:     String("DUE_LANG"),
+					Assignee:    Int(9),
+				},
+			},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:    "https://api.todoist.com/rest/v1/tasks",
+				Method: http.MethodPost,
+				Payload: map[string]interface{}{
+					"content":      tt.args.content,
+					"description":  *tt.args.opts.Description,
+					"project_id":   *tt.args.opts.ProjectID,
+					"section_id":   *tt.args.opts.SectionID,
+					"parent_id":    *tt.args.opts.ParentID,
+					"order":        *tt.args.opts.Order,
+					"label_ids":    strings.Join(intsToStrings(tt.args.opts.LabelIDs), ","),
+					"priority":     *tt.args.opts.Priority,
+					"due_string":   *tt.args.opts.DueString,
+					"due_date":     *tt.args.opts.DueDate,
+					"due_datetime": *tt.args.opts.DueDatetime,
+					"due_lang":     *tt.args.opts.DueLang,
+					"assignee":     *tt.args.opts.Assignee,
+				},
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
+			}).Return(tt.resp, nil)
+
+			task, err := cl.CreateTaskWithOptions(tt.args.content, tt.args.opts)
+
+			assert.Equal(t, tt.want, task)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}

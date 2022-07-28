@@ -111,8 +111,9 @@ func (cl *Client) GetTask(id int) (*Task, error) {
 }
 
 // Options for creating task.
-// Please note that only one of the Due* fields can be used at the same time (DueLang is a special case).
 type CreateTaskOptions struct {
+	RequestID *string
+
 	// A description for the task.
 	// This value may contain markdown-formatted text and hyperlinks.
 	// Details on markdown support can be found in the Text Formatting article (https://todoist.com/help/articles/text-formatting) in the Help Center.
@@ -167,6 +168,7 @@ func (cl *Client) CreateTaskWithOptions(content string, opts *CreateTaskOptions)
 		addOptionalStringToMap(p, "due_datetime", opts.DueDatetime)
 		addOptionalStringToMap(p, "due_lang", opts.DueLang)
 		addOptionalIntToMap(p, "assignee", opts.Assignee)
+		reqID = opts.RequestID
 	}
 
 	task := Task{}
