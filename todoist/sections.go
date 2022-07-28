@@ -2,7 +2,6 @@ package todoist
 
 import (
 	"fmt"
-	"strconv"
 )
 
 type Section struct {
@@ -21,6 +20,7 @@ type Sections []*Section
 
 // Options for getting sections.
 type GetSectionsOptions struct {
+	// Filter sections by project ID.
 	ProjectID *int
 }
 
@@ -33,9 +33,7 @@ func (cl *Client) GetSections() (Sections, error) {
 func (cl *Client) GetSectionsWithOptions(opts *GetSectionsOptions) (Sections, error) {
 	p := map[string]string{}
 	if opts != nil {
-		if opts.ProjectID != nil {
-			p["project_id"] = strconv.Itoa(*opts.ProjectID)
-		}
+		addOptionalIntToStringMap(p, "project_id", opts.ProjectID)
 	}
 
 	secs := Sections{}
