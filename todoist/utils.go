@@ -1,5 +1,7 @@
 package todoist
 
+import "strconv"
+
 // Returns a string as a pointer.
 func String(s string) *string { return &s }
 
@@ -27,9 +29,22 @@ func addOptionalBoolToMap(m map[string]interface{}, k string, v *bool) {
 	}
 }
 
-// NOTE: Do not use generics at this time to support versions below go1.18
-// func addOptionalValueToMap[T any](m map[string]interface{}, k string, v *T) {
-// 	if v != nil {
-// 		m[k] = *v
-// 	}
-// }
+func addOptionalStringToStringMap(m map[string]string, k string, v *string) {
+	if v != nil {
+		m[k] = *v
+	}
+}
+
+func addOptionalIntToStringMap(m map[string]string, k string, v *int) {
+	if v != nil {
+		m[k] = strconv.Itoa(*v)
+	}
+}
+
+func intsToStrings(is []int) []string {
+	ss := []string{}
+	for _, i := range is {
+		ss = append(ss, strconv.Itoa(i))
+	}
+	return ss
+}
