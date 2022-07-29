@@ -255,3 +255,27 @@ func (cl *Client) CloseTaskWithOptions(id int, opts *CloseTaskOptions) error {
 
 	return nil
 }
+
+// Options for reopening task.
+type ReopenTaskOptions struct {
+	RequestID *string
+}
+
+// Reopens a task.
+func (cl *Client) ReopenTask(id int) error {
+	return cl.ReopenTaskWithOptions(id, nil)
+}
+
+// Reopens a task with options.
+func (cl *Client) ReopenTaskWithOptions(id int, opts *ReopenTaskOptions) error {
+	var reqID *string
+	if opts != nil {
+		reqID = opts.RequestID
+	}
+
+	if err := cl.postWithoutBind(fmt.Sprintf("/v1/tasks/%d/reopen", id), nil, reqID); err != nil {
+		return err
+	}
+
+	return nil
+}
