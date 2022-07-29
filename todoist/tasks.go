@@ -57,7 +57,7 @@ type Due struct {
 	Timezone *string `json:"timezone"`
 }
 
-// Options for getting tasks.
+// Options for getting a tasks.
 type GetTasksOptions struct {
 	// Filter tasks by project ID.
 	ProjectID *int
@@ -101,7 +101,7 @@ func (cl *Client) GetTasksWithOptions(opts *GetTasksOptions) (Tasks, error) {
 	return tasks, nil
 }
 
-// Get a single active task by ID.
+// Get a single active task.
 func (cl *Client) GetTask(id int) (*Task, error) {
 	task := Task{}
 	if err := cl.get(fmt.Sprintf("/v1/tasks/%d", id), nil, &task); err != nil {
@@ -110,7 +110,7 @@ func (cl *Client) GetTask(id int) (*Task, error) {
 	return &task, nil
 }
 
-// Options for creating task.
+// Options for creating a task.
 type CreateTaskOptions struct {
 	RequestID *string
 
@@ -178,7 +178,7 @@ func (cl *Client) CreateTaskWithOptions(content string, opts *CreateTaskOptions)
 	return &task, nil
 }
 
-// Options for updating task.
+// Options for updating a task.
 type UpdateTaskOptions struct {
 	RequestID *string
 
@@ -232,7 +232,7 @@ func (cl *Client) UpdateTaskWithOptions(id int, opts *UpdateTaskOptions) error {
 	return nil
 }
 
-// Options for closing task.
+// Options for closing a task.
 type CloseTaskOptions struct {
 	RequestID *string
 }
@@ -256,7 +256,7 @@ func (cl *Client) CloseTaskWithOptions(id int, opts *CloseTaskOptions) error {
 	return nil
 }
 
-// Options for reopening task.
+// Options for reopening a task.
 type ReopenTaskOptions struct {
 	RequestID *string
 }
@@ -280,15 +280,17 @@ func (cl *Client) ReopenTaskWithOptions(id int, opts *ReopenTaskOptions) error {
 	return nil
 }
 
-// Options for deleting task.
+// Options for deleting a task.
 type DeleteTaskOptions struct {
 	RequestID *string
 }
 
+// Deletes a task.
 func (cl *Client) DeleteTask(id int) error {
 	return cl.DeleteTaskWithOptions(id, nil)
 }
 
+// Deletes a task with options.
 func (cl *Client) DeleteTaskWithOptions(id int, opts *DeleteTaskOptions) error {
 	var reqID *string
 	if opts != nil {

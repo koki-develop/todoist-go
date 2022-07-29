@@ -18,18 +18,18 @@ type Section struct {
 // List of sections.
 type Sections []*Section
 
-// Options for getting sections.
+// Options for getting a sections.
 type GetSectionsOptions struct {
 	// Filter sections by project ID.
 	ProjectID *int
 }
 
-// Get list of all sections.
+// Gets list of all sections.
 func (cl *Client) GetSections() (Sections, error) {
 	return cl.GetSectionsWithOptions(nil)
 }
 
-// Get list of all sections with options.
+// Gets list of all sections with options.
 func (cl *Client) GetSectionsWithOptions(opts *GetSectionsOptions) (Sections, error) {
 	p := map[string]string{}
 	if opts != nil {
@@ -44,7 +44,7 @@ func (cl *Client) GetSectionsWithOptions(opts *GetSectionsOptions) (Sections, er
 	return secs, nil
 }
 
-// Gets the section related to the given ID.
+// Gets a section.
 func (cl *Client) GetSection(id int) (*Section, error) {
 	sec := Section{}
 	if err := cl.get(fmt.Sprintf("/v1/sections/%d", id), nil, &sec); err != nil {
@@ -53,7 +53,7 @@ func (cl *Client) GetSection(id int) (*Section, error) {
 	return &sec, nil
 }
 
-// Options for creating section.
+// Options for creating a section.
 type CreateSectionOptions struct {
 	RequestID *string
 
@@ -83,17 +83,17 @@ func (cl *Client) CreateSectionWithOptions(name string, projectID int, opts *Cre
 	return &sec, nil
 }
 
-// Options for updating section.
+// Options for updating a section.
 type UpdateSectionOptions struct {
 	RequestID *string
 }
 
-// Updates the section for the given ID.
+// Updates a section.
 func (cl *Client) UpdateSection(id int, name string) error {
 	return cl.UpdateSectionWithOptions(id, name, nil)
 }
 
-// Updates the section for the given ID with options.
+// Updates a section with options.
 func (cl *Client) UpdateSectionWithOptions(id int, name string, opts *UpdateSectionOptions) error {
 	p := map[string]interface{}{"name": name}
 	var reqID *string
@@ -113,12 +113,12 @@ type DeleteSectionOptions struct {
 	RequestID *string
 }
 
-// Deletes the section for the given ID.
+// Deletes a section.
 func (cl *Client) DeleteSection(id int) error {
 	return cl.DeleteSectionWithOptions(id, nil)
 }
 
-// Deletes the section for the given ID with options.
+// Deletes a section with options.
 func (cl *Client) DeleteSectionWithOptions(id int, opts *DeleteSectionOptions) error {
 	var reqID *string
 	if opts != nil {
