@@ -9,15 +9,37 @@
 
 This is a Go client library for accessing the [Todoist APIs](https://developer.todoist.com/guides/#our-apis).
 
+## Contents
+
+- [Installation](#installation)
+- [REST API Client](#rest-api-client)
+  - [Import](#import)
+  - [Example](#example)
+    - [Get all projects](#get-all-projects)
+    - [Create a new task](#create-a-new-task)
+  - [Documentation](#documentation)
+- [Sync API Client](#sync-api-client)
+- [LICENSE](#license)
+
 ## Installation
 
 ```sh
 go get github.com/koki-develop/todoist-go
 ```
 
-## Example
+## REST API Client
 
-### Get all projects
+`todoist-go/todoist` is a package for accessing the [Todoist REST API](https://developer.todoist.com/rest/v1).
+
+### Import
+
+```go
+import "github.com/koki-develop/todoist-go/todoist"
+```
+
+### Example
+
+#### Get all projects
 
 ```go
 package main
@@ -46,18 +68,64 @@ func main() {
 }
 ```
 
-### Create a new task
+#### Create a new task
 
-<!-- TODO: add -->
-wip
+```go
+package main
 
-## Documentation
+import (
+	"fmt"
 
-### REST API Client
+	"github.com/koki-develop/todoist-go/todoist"
+)
 
-- [todoist-go/todoist](https://pkg.go.dev/github.com/koki-develop/todoist-go/todoist)
+func main() {
+	cl := todoist.New("TODOIST_API_TOKEN")
 
-### Sync API Client
+	task, err := cl.CreateTask("task content")
+	if err != nil {
+		fmt.Printf("%s\n", err)
+	}
+
+	fmt.Printf("ID: %d, Content: %s\n", task.ID, task.Content)
+	// ID: 3456789012, Content: task content
+}
+```
+
+With optional parameters:
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/koki-develop/todoist-go/todoist"
+)
+
+func main() {
+	cl := todoist.New("TODOIST_API_TOKEN")
+
+	task, err := cl.CreateTaskWithOptions("task content", &todoist.CreateTaskOptions{
+		// Helper functions can be used to specify optional parameters.
+		ProjectID: todoist.Int(4567890123),
+		SectionID: todoist.Int(5678901234),
+		DueString: todoist.String("every 3 months"),
+	})
+	if err != nil {
+		fmt.Printf("%s\n", err)
+	}
+
+	fmt.Printf("ID: %d, Content: %s\n", task.ID, task.Content)
+	// ID: 6789012345, Content: task content
+}
+```
+
+### Documentation
+
+For more information, see [todoist-go/todoist](https://pkg.go.dev/github.com/koki-develop/todoist-go/todoist).
+
+## Sync API Client
 
 <!-- TODO: add -->
 wip
