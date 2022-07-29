@@ -350,3 +350,88 @@ func TestClient_CreateTaskWithOptions(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_UpdateTaskWithOptions(t *testing.T) {
+	type args struct {
+		id   int
+		opts *UpdateTaskOptions
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		wantErr bool
+	}{
+		{
+			name: "should return nil",
+			args: args{id: 1, opts: &UpdateTaskOptions{
+				RequestID:   String("REQUEST_ID"),
+				Content:     String("TASK"),
+				Description: String("DESCRIPTION"),
+				LabelIDs:    []int{1, 2, 3},
+				Priority:    Int(4),
+				DueString:   String("DUE_STRING"),
+				DueDate:     String("DUE_DATE"),
+				DueDatetime: String("DUE_DATETIME"),
+				DueLang:     String("DUE_LANG"),
+				Assignee:    Int(5),
+			}},
+			resp: &restResponse{
+				StatusCode: http.StatusNoContent,
+				Body:       strings.NewReader(""),
+			},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{id: 1, opts: &UpdateTaskOptions{
+				RequestID:   String("REQUEST_ID"),
+				Content:     String("TASK"),
+				Description: String("DESCRIPTION"),
+				LabelIDs:    []int{1, 2, 3},
+				Priority:    Int(4),
+				DueString:   String("DUE_STRING"),
+				DueDate:     String("DUE_DATE"),
+				DueDatetime: String("DUE_DATETIME"),
+				DueLang:     String("DUE_LANG"),
+				Assignee:    Int(5),
+			}},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:    fmt.Sprintf("https://api.todoist.com/rest/v1/tasks/%d", tt.args.id),
+				Method: http.MethodPost,
+				Payload: map[string]interface{}{
+					"content":      *tt.args.opts.Content,
+					"description":  *tt.args.opts.Description,
+					"label_ids":    tt.args.opts.LabelIDs,
+					"priority":     *tt.args.opts.Priority,
+					"due_string":   *tt.args.opts.DueString,
+					"due_date":     *tt.args.opts.DueDate,
+					"due_datetime": *tt.args.opts.DueDatetime,
+					"due_lang":     *tt.args.opts.DueLang,
+					"assignee":     *tt.args.opts.Assignee,
+				},
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
+			}).Return(tt.resp, nil)
+
+			err := cl.UpdateTaskWithOptions(tt.args.id, tt.args.opts)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
