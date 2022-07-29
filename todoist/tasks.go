@@ -177,3 +177,57 @@ func (cl *Client) CreateTaskWithOptions(content string, opts *CreateTaskOptions)
 	}
 	return &task, nil
 }
+
+// Options for updating task.
+type UpdateTaskOptions struct {
+	RequestID *string
+
+	// Task content.
+	// This value may contain markdown-formatted text and hyperlinks.
+	// Details on markdown support can be found in the Text Formatting article (https://todoist.com/help/articles/text-formatting) in the Help Center.
+	Content *string
+	// A description for the task.
+	// This value may contain markdown-formatted text and hyperlinks.
+	// Details on markdown support can be found in the Text Formatting article (https://todoist.com/help/articles/text-formatting) in the Help Center.
+	Description *string
+	// IDs of labels associated with the task.
+	LabelIDs []int
+	// Task priority from 1 (normal) to 4 (urgent).
+	Priority *int
+	// Human defined (https://todoist.com/help/articles/due-dates-and-times) task due date (ex.: "next Monday", "Tomorrow"). Value is set using local (not UTC) time.
+	DueString *string
+	// Specific date in YYYY-MM-DD format relative to user’s timezone.
+	DueDate *string
+	// Specific date and time in RFC3339 (https://www.ietf.org/rfc/rfc3339.txt) format in UTC.
+	DueDatetime *string
+	// 2-letter code specifying language in case due_string is not written in English.
+	DueLang *string
+	// The responsible user ID or 0 to unset (for shared tasks).
+	Assignee *int
+}
+
+// Updates a task.
+func (cl *Client) UpdateTaskWithOptions(id int, opts *UpdateTaskOptions) error {
+	var reqID *string
+	p := map[string]interface{}{}
+	if opts != nil {
+		reqID = opts.RequestID
+		addOptionalStringToMap(p, "content", opts.Content)
+		addOptionalStringToMap(p, "description", opts.Description)
+		if opts.LabelIDs != nil {
+			p["label_ids"] = opts.LabelIDs
+		}
+		addOptionalIntToMap(p, "priority", opts.Priority)
+		addOptionalStringToMap(p, "due_string", opts.DueString)
+		addOptionalStringToMap(p, "due_date", opts.DueDate)
+		addOptionalStringToMap(p, "due_datetime", opts.DueDatetime)
+		addOptionalStringToMap(p, "due_lang", opts.DueLang)
+		addOptionalIntToMap(p, "assignee", opts.Assignee)
+	}
+
+	if err := cl.postWithoutBind(fmt.Sprintf("/v1/tasks/%d", id), p, reqID); err != nil {
+		return err
+	}
+
+	return nil
+}
