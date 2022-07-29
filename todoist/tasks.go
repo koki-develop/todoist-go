@@ -279,3 +279,25 @@ func (cl *Client) ReopenTaskWithOptions(id int, opts *ReopenTaskOptions) error {
 
 	return nil
 }
+
+// Options for deleting task.
+type DeleteTaskOptions struct {
+	RequestID *string
+}
+
+func (cl *Client) DeleteTask(id int) error {
+	return cl.DeleteTaskWithOptions(id, nil)
+}
+
+func (cl *Client) DeleteTaskWithOptions(id int, opts *DeleteTaskOptions) error {
+	var reqID *string
+	if opts != nil {
+		reqID = opts.RequestID
+	}
+
+	if err := cl.delete(fmt.Sprintf("/v1/tasks/%d", id), reqID); err != nil {
+		return err
+	}
+
+	return nil
+}
