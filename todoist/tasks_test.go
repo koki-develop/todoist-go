@@ -435,3 +435,106 @@ func TestClient_UpdateTaskWithOptions(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_CloseTask(t *testing.T) {
+	type args struct {
+		id int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		wantErr bool
+	}{
+		{
+			name: "should return nil",
+			args: args{id: 1},
+			resp: &restResponse{
+				StatusCode: http.StatusNoContent,
+				Body:       strings.NewReader(""),
+			},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{id: 1},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/tasks/%d/close", tt.args.id),
+				Method:  http.MethodPost,
+				Headers: map[string]string{"Authorization": "Bearer TOKEN"},
+			}).Return(tt.resp, nil)
+
+			err := cl.CloseTask(tt.args.id)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
+
+func TestClient_CloseTaskWithOptions(t *testing.T) {
+	type args struct {
+		id   int
+		opts *CloseTaskOptions
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		wantErr bool
+	}{
+		{
+			name: "should return nil",
+			args: args{id: 1, opts: &CloseTaskOptions{RequestID: String("REQUEST_ID")}},
+			resp: &restResponse{
+				StatusCode: http.StatusNoContent,
+				Body:       strings.NewReader(""),
+			},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{id: 1, opts: &CloseTaskOptions{RequestID: String("REQUEST_ID")}},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/tasks/%d/close", tt.args.id),
+				Method:  http.MethodPost,
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "X-Request-Id": *tt.args.opts.RequestID},
+			}).Return(tt.resp, nil)
+
+			err := cl.CloseTaskWithOptions(tt.args.id, tt.args.opts)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}

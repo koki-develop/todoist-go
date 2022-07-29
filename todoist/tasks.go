@@ -231,3 +231,27 @@ func (cl *Client) UpdateTaskWithOptions(id int, opts *UpdateTaskOptions) error {
 
 	return nil
 }
+
+// Options for closing task.
+type CloseTaskOptions struct {
+	RequestID *string
+}
+
+// Closes a task.
+func (cl *Client) CloseTask(id int) error {
+	return cl.CloseTaskWithOptions(id, nil)
+}
+
+// Closes a task with options.
+func (cl *Client) CloseTaskWithOptions(id int, opts *CloseTaskOptions) error {
+	var reqID *string
+	if opts != nil {
+		reqID = opts.RequestID
+	}
+
+	if err := cl.postWithoutBind(fmt.Sprintf("/v1/tasks/%d/close", id), nil, reqID); err != nil {
+		return err
+	}
+
+	return nil
+}
