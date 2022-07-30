@@ -1,11 +1,10 @@
-[![go.mod](https://img.shields.io/github/go-mod/go-version/koki-develop/go-todoist)](https://github.com/koki-develop/go-todoist/blob/main/go.mod)
-[![release](https://img.shields.io/github/v/release/koki-develop/go-todoist)](https://github.com/koki-develop/go-todoist/releases/latest)
-[![GitHub Actions](https://github.com/koki-develop/go-todoist/actions/workflows/main.yml/badge.svg)](https://github.com/koki-develop/go-todoist/actions/workflows/main.yml)
-[![Maintainability](https://api.codeclimate.com/v1/badges/0ee29ff12f800bcb7001/maintainability)](https://codeclimate.com/github/koki-develop/go-todoist/maintainability)
-[![codecov](https://codecov.io/gh/koki-develop/go-todoist/branch/main/graph/badge.svg)](https://codecov.io/gh/koki-develop/go-todoist)
-[![LICENSE](https://img.shields.io/github/license/koki-develop/go-todoist)](./LICENSE)
+[![go.mod](https://img.shields.io/github/go-mod/go-version/koki-develop/todoist-go)](https://github.com/koki-develop/todoist-go/blob/main/go.mod)
+[![release](https://img.shields.io/github/v/release/koki-develop/todoist-go)](https://github.com/koki-develop/todoist-go/releases/latest)
+[![GitHub Actions](https://github.com/koki-develop/todoist-go/actions/workflows/main.yml/badge.svg)](https://github.com/koki-develop/todoist-go/actions/workflows/main.yml)
+[![codecov](https://codecov.io/gh/koki-develop/todoist-go/branch/main/graph/badge.svg)](https://codecov.io/gh/koki-develop/todoist-go)
+[![LICENSE](https://img.shields.io/github/license/koki-develop/todoist-go)](./LICENSE)
 
-# go-todoist
+# todoist-go
 
 This is an unofficial Go client library for accessing the [Todoist APIs](https://developer.todoist.com/guides/#our-apis).
 
@@ -25,17 +24,17 @@ This is an unofficial Go client library for accessing the [Todoist APIs](https:/
 ## Installation
 
 ```sh
-go get github.com/koki-develop/go-todoist
+go get github.com/koki-develop/todoist-go
 ```
 
 ## REST API Client
 
-[`go-todoist/todoist`](https://pkg.go.dev/github.com/koki-develop/go-todoist/todoist) is a package for accessing the [Todoist REST API](https://developer.todoist.com/rest/v1).
+[`todoist-go/todoist`](https://pkg.go.dev/github.com/koki-develop/todoist-go/todoist) is a package for accessing the [Todoist REST API](https://developer.todoist.com/rest/v1).
 
 ### Import
 
 ```go
-import "github.com/koki-develop/go-todoist/todoist"
+import "github.com/koki-develop/todoist-go/todoist"
 ```
 
 ### Example
@@ -48,7 +47,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/koki-develop/go-todoist/todoist"
+	"github.com/koki-develop/todoist-go/todoist"
 )
 
 func main() {
@@ -77,7 +76,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/koki-develop/go-todoist/todoist"
+	"github.com/koki-develop/todoist-go/todoist"
 )
 
 func main() {
@@ -101,7 +100,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/koki-develop/go-todoist/todoist"
+	"github.com/koki-develop/todoist-go/todoist"
 )
 
 func main() {
@@ -124,7 +123,7 @@ func main() {
 
 #### Handling Errors
 
-go-todoist returns a `RequestError` with status code and body when an error response is returned from the Todoist REST API.
+todoist-go returns a `RequestError` with status code and body when an error response is returned from the Todoist REST API.
 
 ```go
 package main
@@ -133,7 +132,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/koki-develop/go-todoist/todoist"
+	"github.com/koki-develop/todoist-go/todoist"
 )
 
 func main() {
@@ -155,7 +154,7 @@ func main() {
 
 ### Documentation
 
-For more information, see [go-todoist/todoist](https://pkg.go.dev/github.com/koki-develop/go-todoist/todoist).
+For more information, see [todoist-go/todoist](https://pkg.go.dev/github.com/koki-develop/todoist-go/todoist).
 
 ## Sync API Client
 
