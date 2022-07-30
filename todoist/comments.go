@@ -71,7 +71,7 @@ func (cl *Client) GetTaskComments(taskID int) (Comments, error) {
 	return cmts, nil
 }
 
-// Options for creating a comment.
+// Options for creating a comment for a project.
 type CreateProjectCommentOptions struct {
 	RequestID *string
 
@@ -103,6 +103,7 @@ func (cl *Client) CreateProjectCommentWithOptions(projectID int, content string,
 	return &cmt, nil
 }
 
+// Options for creating a comment for a task.
 type CreateTaskCommentOptions struct {
 	RequestID *string
 
