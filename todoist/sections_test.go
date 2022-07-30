@@ -53,6 +53,7 @@ func TestClient_GetSections(t *testing.T) {
 			assert.Equal(t, tt.want, secs)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -108,6 +109,7 @@ func TestClient_GetSection(t *testing.T) {
 			assert.Equal(t, tt.want, sec)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -166,6 +168,7 @@ func TestClient_GetSectionsWithOptions(t *testing.T) {
 			assert.Equal(t, tt.want, secs)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -223,6 +226,7 @@ func TestClient_CreateSection(t *testing.T) {
 			assert.Equal(t, tt.want, sec)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -281,6 +285,7 @@ func TestClient_CreateSectionWithOptions(t *testing.T) {
 			assert.Equal(t, tt.want, sec)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -334,6 +339,7 @@ func TestClient_UpdateSection(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -388,6 +394,7 @@ func TestClient_UpdateSectionWithOptions(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -440,6 +447,7 @@ func TestClient_DeleteSectionWithOptions(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}

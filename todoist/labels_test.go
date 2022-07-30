@@ -50,6 +50,7 @@ func TestClient_GetLabels(t *testing.T) {
 			assert.Equal(t, tt.want, labels)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -105,6 +106,7 @@ func TestClient_GetLabel(t *testing.T) {
 			assert.Equal(t, tt.want, label)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -161,6 +163,7 @@ func TestClient_CreateLabel(t *testing.T) {
 			assert.Equal(t, tt.want, label)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -233,6 +236,7 @@ func TestClient_CreateLabelWithOptions(t *testing.T) {
 			assert.Equal(t, tt.want, label)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -303,6 +307,7 @@ func TestClient_UpdateLabelWithOptions(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -354,6 +359,7 @@ func TestClient_DeleteLabel(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -410,6 +416,7 @@ func TestClient_DeleteLabelWithOptions(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}

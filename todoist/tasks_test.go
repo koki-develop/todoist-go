@@ -50,6 +50,7 @@ func TestClient_GetTasks(t *testing.T) {
 			assert.Equal(t, tt.want, tasks)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -127,6 +128,7 @@ func TestClient_GetTasksWithOptions(t *testing.T) {
 			assert.Equal(t, tt.want, tasks)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -182,6 +184,7 @@ func TestClient_GetTask(t *testing.T) {
 			assert.Equal(t, tt.want, task)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -238,6 +241,7 @@ func TestClient_CreateTask(t *testing.T) {
 			assert.Equal(t, tt.want, task)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -343,6 +347,7 @@ func TestClient_CreateTaskWithOptions(t *testing.T) {
 			assert.Equal(t, tt.want, task)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -428,6 +433,7 @@ func TestClient_UpdateTaskWithOptions(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -479,6 +485,7 @@ func TestClient_CloseTask(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -531,6 +538,7 @@ func TestClient_CloseTaskWithOptions(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -582,6 +590,7 @@ func TestClient_ReopenTask(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -634,6 +643,7 @@ func TestClient_ReopenTaskWithOptions(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -685,6 +695,7 @@ func TestClient_DeleteTask(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -737,6 +748,7 @@ func TestClient_DeleteTaskWithOptions(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
