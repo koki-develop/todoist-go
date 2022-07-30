@@ -1,5 +1,7 @@
 package todoist
 
+import "strconv"
+
 type Comment struct {
 	// Comment ID.
 	ID int `json:"id"`
@@ -16,6 +18,9 @@ type Comment struct {
 	// Attachment file.
 	Attachment *Attachment `json:"attachment"`
 }
+
+// List of comments.
+type Comments []*Comment
 
 type Attachment struct {
 	// The type of the file (for example image, video, audio, file, etc.)
@@ -46,4 +51,20 @@ type Attachment struct {
 	TnM []interface{} `json:"tn_m"`
 	// Small thumbnail (a list that contains the URL, the width and the height of the thumbnail).
 	TnS []interface{} `json:"tn_s"`
+}
+
+func (cl *Client) GetProjectComments(projectID int) (Comments, error) {
+	cmts := Comments{}
+	if err := cl.get("/v1/comments", map[string]string{"project_id": strconv.Itoa(projectID)}, &cmts); err != nil {
+		return nil, err
+	}
+	return cmts, nil
+}
+
+func (cl *Client) GetTaskComments(taskID int) (Comments, error) {
+	cmts := Comments{}
+	if err := cl.get("/v1/comments", map[string]string{"task_id": strconv.Itoa(taskID)}, &cmts); err != nil {
+		return nil, err
+	}
+	return cmts, nil
 }

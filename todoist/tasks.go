@@ -42,6 +42,7 @@ type Task struct {
 	Assigner int `json:"assigner"`
 }
 
+// List of tasks.
 type Tasks []*Task
 
 type Due struct {
