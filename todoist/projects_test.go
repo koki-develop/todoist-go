@@ -379,10 +379,10 @@ func TestClient_DeleteProjectWithOptions(t *testing.T) {
 			api.On("Do", &restRequest{
 				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", tt.args.id),
 				Method:  http.MethodDelete,
-				Headers: map[string]string{"Authorization": "Bearer TOKEN"},
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "X-Request-Id": *tt.args.opts.RequestID},
 			}).Return(tt.resp, nil)
 
-			err := cl.DeleteProject(tt.args.id)
+			err := cl.DeleteProjectWithOptions(tt.args.id, tt.args.opts)
 
 			if tt.wantErr {
 				assert.Error(t, err)

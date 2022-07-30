@@ -108,6 +108,7 @@ func (cl *Client) GetTask(id int) (*Task, error) {
 	if err := cl.get(fmt.Sprintf("/v1/tasks/%d", id), nil, &task); err != nil {
 		return nil, err
 	}
+
 	return &task, nil
 }
 
@@ -154,6 +155,7 @@ func (cl *Client) CreateTaskWithOptions(content string, opts *CreateTaskOptions)
 	p := map[string]interface{}{"content": content}
 	var reqID *string
 	if opts != nil {
+		reqID = opts.RequestID
 		addOptionalStringToMap(p, "description", opts.Description)
 		addOptionalIntToMap(p, "project_id", opts.ProjectID)
 		addOptionalIntToMap(p, "section_id", opts.SectionID)
@@ -169,13 +171,13 @@ func (cl *Client) CreateTaskWithOptions(content string, opts *CreateTaskOptions)
 		addOptionalStringToMap(p, "due_datetime", opts.DueDatetime)
 		addOptionalStringToMap(p, "due_lang", opts.DueLang)
 		addOptionalIntToMap(p, "assignee", opts.Assignee)
-		reqID = opts.RequestID
 	}
 
 	task := Task{}
 	if err := cl.post("/v1/tasks", p, reqID, &task); err != nil {
 		return nil, err
 	}
+
 	return &task, nil
 }
 

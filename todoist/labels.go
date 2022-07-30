@@ -126,6 +126,7 @@ func (cl *Client) DeleteLabelWithOptions(id int, opts *DeleteLabelOptions) error
 	if opts != nil {
 		reqID = opts.RequestID
 	}
+
 	if err := cl.delete(fmt.Sprintf("/v1/labels/%d", id), reqID); err != nil {
 		return err
 	}

@@ -1,7 +1,6 @@
 package todoist
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 )
@@ -18,10 +17,5 @@ func (err RequestError) Error() string {
 }
 
 func newRequestError(resp *restResponse) (RequestError, error) {
-	buf := new(bytes.Buffer)
-	if _, err := buf.ReadFrom(resp.Body); err != nil {
-		return RequestError{}, err
-	}
-
-	return RequestError{StatusCode: resp.StatusCode, Body: buf}, nil
+	return RequestError{StatusCode: resp.StatusCode, Body: resp.Body}, nil
 }

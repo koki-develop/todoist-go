@@ -58,19 +58,20 @@ type Attachment struct {
 
 // Gets list of all comments for a project.
 func (cl *Client) GetProjectComments(projectID int) (Comments, error) {
-	cmts := Comments{}
-	if err := cl.get("/v1/comments", map[string]string{"project_id": strconv.Itoa(projectID)}, &cmts); err != nil {
-		return nil, err
-	}
-	return cmts, nil
+	return cl.getComments(map[string]string{"project_id": strconv.Itoa(projectID)})
 }
 
 // Gets list of all comments for a task.
 func (cl *Client) GetTaskComments(taskID int) (Comments, error) {
+	return cl.getComments(map[string]string{"task_id": strconv.Itoa(taskID)})
+}
+
+func (cl *Client) getComments(p map[string]string) (Comments, error) {
 	cmts := Comments{}
-	if err := cl.get("/v1/comments", map[string]string{"task_id": strconv.Itoa(taskID)}, &cmts); err != nil {
+	if err := cl.get("/v1/comments", p, &cmts); err != nil {
 		return nil, err
 	}
+
 	return cmts, nil
 }
 
