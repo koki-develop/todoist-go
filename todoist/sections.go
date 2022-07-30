@@ -50,6 +50,7 @@ func (cl *Client) GetSection(id int) (*Section, error) {
 	if err := cl.get(fmt.Sprintf("/v1/sections/%d", id), nil, &sec); err != nil {
 		return nil, err
 	}
+
 	return &sec, nil
 }
 
@@ -68,15 +69,15 @@ func (cl *Client) CreateSection(name string, projectID int) (*Section, error) {
 
 // Creates a new section with options and returns it.
 func (cl *Client) CreateSectionWithOptions(name string, projectID int, opts *CreateSectionOptions) (*Section, error) {
-	j := map[string]interface{}{"name": name, "project_id": projectID}
+	p := map[string]interface{}{"name": name, "project_id": projectID}
 	var reqID *string
 	if opts != nil {
-		addOptionalIntToMap(j, "order", opts.Order)
+		addOptionalIntToMap(p, "order", opts.Order)
 		reqID = opts.RequestID
 	}
 
 	sec := Section{}
-	if err := cl.post("/v1/sections", j, reqID, &sec); err != nil {
+	if err := cl.post("/v1/sections", p, reqID, &sec); err != nil {
 		return nil, err
 	}
 
@@ -124,8 +125,10 @@ func (cl *Client) DeleteSectionWithOptions(id int, opts *DeleteSectionOptions) e
 	if opts != nil {
 		reqID = opts.RequestID
 	}
+
 	if err := cl.delete(fmt.Sprintf("/v1/sections/%d", id), reqID); err != nil {
 		return err
 	}
+
 	return nil
 }

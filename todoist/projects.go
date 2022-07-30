@@ -54,6 +54,7 @@ func (cl *Client) GetProject(id int) (*Project, error) {
 	if err := cl.get(fmt.Sprintf("/v1/projects/%d", id), nil, &proj); err != nil {
 		return nil, err
 	}
+
 	return &proj, nil
 }
 
@@ -77,18 +78,20 @@ func (cl *Client) CreateProject(name string) (*Project, error) {
 
 // Creates a new project with options and returns it.
 func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptions) (*Project, error) {
-	j := map[string]interface{}{"name": name}
+	p := map[string]interface{}{"name": name}
 	var reqID *string
 	if opts != nil {
-		addOptionalIntToMap(j, "parent_id", opts.ParentID)
-		addOptionalIntToMap(j, "color", opts.Color)
-		addOptionalBoolToMap(j, "favorite", opts.Favorite)
 		reqID = opts.RequestID
+		addOptionalIntToMap(p, "parent_id", opts.ParentID)
+		addOptionalIntToMap(p, "color", opts.Color)
+		addOptionalBoolToMap(p, "favorite", opts.Favorite)
 	}
+
 	proj := Project{}
-	if err := cl.post("/v1/projects", j, reqID, &proj); err != nil {
+	if err := cl.post("/v1/projects", p, reqID, &proj); err != nil {
 		return nil, err
 	}
+
 	return &proj, nil
 }
 
@@ -107,16 +110,16 @@ type UpdateProjectOptions struct {
 
 // Updates a project.
 func (cl *Client) UpdateProjectWithOptions(id int, opts *UpdateProjectOptions) error {
-	j := map[string]interface{}{}
+	p := map[string]interface{}{}
 	var reqID *string = nil
 	if opts != nil {
-		addOptionalStringToMap(j, "name", opts.Name)
-		addOptionalIntToMap(j, "color", opts.Color)
-		addOptionalBoolToMap(j, "favorite", opts.Favorite)
 		reqID = opts.RequestID
+		addOptionalStringToMap(p, "name", opts.Name)
+		addOptionalIntToMap(p, "color", opts.Color)
+		addOptionalBoolToMap(p, "favorite", opts.Favorite)
 	}
 
-	if err := cl.postWithoutBind(fmt.Sprintf("/v1/projects/%d", id), j, reqID); err != nil {
+	if err := cl.postWithoutBind(fmt.Sprintf("/v1/projects/%d", id), p, reqID); err != nil {
 		return err
 	}
 
@@ -139,6 +142,7 @@ func (cl *Client) DeleteProjectWithOptions(id int, opts *DeleteProjectOptions) e
 	if opts != nil {
 		reqID = opts.RequestID
 	}
+
 	if err := cl.delete(fmt.Sprintf("/v1/projects/%d", id), reqID); err != nil {
 		return err
 	}

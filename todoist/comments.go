@@ -71,6 +71,7 @@ func (cl *Client) getComments(p map[string]string) (Comments, error) {
 	if err := cl.get("/v1/comments", p, &cmts); err != nil {
 		return nil, err
 	}
+
 	return cmts, nil
 }
 
