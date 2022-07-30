@@ -71,6 +71,14 @@ func (cl *Client) GetTaskComments(taskID int) (Comments, error) {
 	return cmts, nil
 }
 
+// Options for creating attachment.
+type UploadAttachmentOptions struct {
+	ResourceType *string
+	FileName     *string
+	FileURL      *string
+	FileType     *string
+}
+
 // Options for creating a comment for a project.
 type CreateProjectCommentOptions struct {
 	RequestID *string
@@ -114,14 +122,6 @@ type CreateTaskCommentOptions struct {
 
 	// Object for attachment object.
 	Attachment *UploadAttachmentOptions
-}
-
-// Options for creating attachment.
-type UploadAttachmentOptions struct {
-	ResourceType *string
-	FileName     *string
-	FileURL      *string
-	FileType     *string
 }
 
 // Creates a comment for a task.
