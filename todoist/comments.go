@@ -76,7 +76,7 @@ type CreateProjectCommentOptions struct {
 	RequestID *string
 
 	// Object for attachment object.
-	Attachment *Attachment
+	Attachment *UploadAttachmentOptions
 }
 
 // Creates a comment for a project.
@@ -91,7 +91,12 @@ func (cl *Client) CreateProjectCommentWithOptions(projectID int, content string,
 	if opts != nil {
 		reqID = opts.RequestID
 		if opts.Attachment != nil {
-			p["attachment"] = *opts.Attachment
+			a := map[string]string{}
+			addOptionalStringToStringMap(a, "resource_type", opts.Attachment.ResourceType)
+			addOptionalStringToStringMap(a, "file_name", opts.Attachment.FileName)
+			addOptionalStringToStringMap(a, "file_url", opts.Attachment.FileURL)
+			addOptionalStringToStringMap(a, "file_type", opts.Attachment.FileType)
+			p["attachment"] = a
 		}
 	}
 
@@ -108,7 +113,15 @@ type CreateTaskCommentOptions struct {
 	RequestID *string
 
 	// Object for attachment object.
-	Attachment *Attachment
+	Attachment *UploadAttachmentOptions
+}
+
+// Options for creating attachment.
+type UploadAttachmentOptions struct {
+	ResourceType *string
+	FileName     *string
+	FileURL      *string
+	FileType     *string
 }
 
 // Creates a comment for a task.
@@ -123,7 +136,12 @@ func (cl *Client) CreateTaskCommentWithOptions(taskID int, content string, opts 
 	if opts != nil {
 		reqID = opts.RequestID
 		if opts.Attachment != nil {
-			p["attachment"] = *opts.Attachment
+			a := map[string]string{}
+			addOptionalStringToStringMap(a, "resource_type", opts.Attachment.ResourceType)
+			addOptionalStringToStringMap(a, "file_name", opts.Attachment.FileName)
+			addOptionalStringToStringMap(a, "file_url", opts.Attachment.FileURL)
+			addOptionalStringToStringMap(a, "file_type", opts.Attachment.FileType)
+			p["attachment"] = a
 		}
 	}
 

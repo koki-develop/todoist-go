@@ -175,3 +175,86 @@ func TestClient_CreateProjectComment(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_CreateProjectCommentWithOptions(t *testing.T) {
+	type args struct {
+		projectID int
+		content   string
+		opts      *CreateProjectCommentOptions
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		want    *Comment
+		wantErr bool
+	}{
+		{
+			name: "should return a comment",
+			args: args{projectID: 1, content: "COMMENT", opts: &CreateProjectCommentOptions{
+				RequestID: String("REQUEST_ID"),
+				Attachment: &UploadAttachmentOptions{
+					ResourceType: String("RESOURCE_TYPE"),
+					FileName:     String("FILE_NAME"),
+					FileURL:      String("FILE_URL"),
+					FileType:     String("FILE_TYPE"),
+				},
+			}},
+			resp: &restResponse{
+				StatusCode: http.StatusOK,
+				Body:       strings.NewReader(`{ "id": 1, "content": "COMMENT" }`),
+			},
+			want:    &Comment{ID: 1, Content: "COMMENT"},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{projectID: 1, content: "COMMENT", opts: &CreateProjectCommentOptions{
+				RequestID: String("REQUEST_ID"),
+				Attachment: &UploadAttachmentOptions{
+					ResourceType: String("RESOURCE_TYPE"),
+					FileName:     String("FILE_NAME"),
+					FileURL:      String("FILE_URL"),
+					FileType:     String("FILE_TYPE"),
+				},
+			}},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:    "https://api.todoist.com/rest/v1/comments",
+				Method: http.MethodPost,
+				Payload: map[string]interface{}{
+					"project_id": tt.args.projectID,
+					"content":    tt.args.content,
+					"attachment": map[string]string{
+						"resource_type": *tt.args.opts.Attachment.ResourceType,
+						"file_name":     *tt.args.opts.Attachment.FileName,
+						"file_url":      *tt.args.opts.Attachment.FileURL,
+						"file_type":     *tt.args.opts.Attachment.FileType,
+					},
+				},
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
+			}).Return(tt.resp, nil)
+
+			cmt, err := cl.CreateProjectCommentWithOptions(tt.args.projectID, tt.args.content, tt.args.opts)
+
+			assert.Equal(t, tt.want, cmt)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
