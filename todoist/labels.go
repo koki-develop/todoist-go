@@ -109,3 +109,25 @@ func (cl *Client) UpdateLabelWithOptions(id int, opts *UpdateLabelOptions) error
 
 	return nil
 }
+
+// Options for deleting a label.
+type DeleteLabelOptions struct {
+	RequestID *string
+}
+
+// Deletes a label.
+func (cl *Client) DeleteLabel(id int) error {
+	return cl.DeleteLabelWithOptions(id, nil)
+}
+
+// Deletes a label with options.
+func (cl *Client) DeleteLabelWithOptions(id int, opts *DeleteLabelOptions) error {
+	var reqID *string
+	if opts != nil {
+		reqID = opts.RequestID
+	}
+	if err := cl.delete(fmt.Sprintf("/v1/labels/%d", id), reqID); err != nil {
+		return err
+	}
+	return nil
+}
