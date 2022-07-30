@@ -7,7 +7,7 @@
 
 # go-todoist ( :warning: In development. :warning: )
 
-This is a Go client library for accessing the [Todoist APIs](https://developer.todoist.com/guides/#our-apis).
+This is a unofficial Go client library for accessing the [Todoist APIs](https://developer.todoist.com/guides/#our-apis).
 
 ## Contents
 
