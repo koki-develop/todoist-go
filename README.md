@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/koki-develop/go-todoist/branch/main/graph/badge.svg)](https://codecov.io/gh/koki-develop/go-todoist)
 [![LICENSE](https://img.shields.io/github/license/koki-develop/go-todoist)](./LICENSE)
 
-# go-todoist ( :warning: In development. :warning: )
+# go-todoist
 
 This is an unofficial Go client library for accessing the [Todoist APIs](https://developer.todoist.com/guides/#our-apis).
 
@@ -30,7 +30,7 @@ go get github.com/koki-develop/go-todoist
 
 ## REST API Client
 
-`go-todoist/todoist` is a package for accessing the [Todoist REST API](https://developer.todoist.com/rest/v1).
+[`go-todoist/todoist`](https://pkg.go.dev/github.com/koki-develop/go-todoist/todoist) is a package for accessing the [Todoist REST API](https://developer.todoist.com/rest/v1).
 
 ### Import
 
@@ -159,8 +159,7 @@ For more information, see [go-todoist/todoist](https://pkg.go.dev/github.com/kok
 
 ## Sync API Client
 
-<!-- TODO: add -->
-wip
+In development.
 
 ## LICENSE
 
