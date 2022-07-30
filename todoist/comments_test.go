@@ -398,3 +398,118 @@ func TestClient_CreateTaskCommentWithOptions(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_UpdateComment(t *testing.T) {
+	type args struct {
+		id      int
+		content string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		wantErr bool
+	}{
+		{
+			name: "should return nil",
+			args: args{id: 1, content: "COMMENT"},
+			resp: &restResponse{
+				StatusCode: http.StatusNoContent,
+				Body:       strings.NewReader(""),
+			},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{id: 1, content: "COMMENT"},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/comments/%d", tt.args.id),
+				Method:  http.MethodPost,
+				Payload: map[string]interface{}{"content": tt.args.content},
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json"},
+			}).Return(tt.resp, nil)
+
+			err := cl.UpdateComment(tt.args.id, tt.args.content)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
+
+func TestClient_UpdateCommentWithOptions(t *testing.T) {
+	type args struct {
+		id      int
+		content string
+		opts    *UpdateCommentOptions
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		wantErr bool
+	}{
+		{
+			name: "should return nil",
+			args: args{
+				id:      1,
+				content: "COMMENT",
+				opts:    &UpdateCommentOptions{RequestID: String("REQUEST_ID")},
+			},
+			resp: &restResponse{
+				StatusCode: http.StatusNoContent,
+				Body:       strings.NewReader(""),
+			},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{
+				id:      1,
+				content: "COMMENT",
+				opts:    &UpdateCommentOptions{RequestID: String("REQUEST_ID")},
+			},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/comments/%d", tt.args.id),
+				Method:  http.MethodPost,
+				Payload: map[string]interface{}{"content": tt.args.content},
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
+			}).Return(tt.resp, nil)
+
+			err := cl.UpdateCommentWithOptions(tt.args.id, tt.args.content, tt.args.opts)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}

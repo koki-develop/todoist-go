@@ -1,6 +1,9 @@
 package todoist
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 type Comment struct {
 	// Comment ID.
@@ -151,4 +154,29 @@ func (cl *Client) CreateTaskCommentWithOptions(taskID int, content string, opts 
 	}
 
 	return &cmt, nil
+}
+
+// Options for updating a comment.
+type UpdateCommentOptions struct {
+	RequestID *string
+}
+
+// Updates a comment.
+func (cl *Client) UpdateComment(id int, content string) error {
+	return cl.UpdateCommentWithOptions(id, content, nil)
+}
+
+// Updates a comment with options.
+func (cl *Client) UpdateCommentWithOptions(id int, content string, opts *UpdateCommentOptions) error {
+	p := map[string]interface{}{"content": content}
+	var reqID *string
+	if opts != nil {
+		reqID = opts.RequestID
+	}
+
+	if err := cl.postWithoutBind(fmt.Sprintf("/v1/comments/%d", id), p, reqID); err != nil {
+		return err
+	}
+
+	return nil
 }
