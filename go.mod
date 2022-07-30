@@ -1,4 +1,4 @@
-module github.com/koki-develop/todoist-go
+module github.com/koki-develop/go-todoist
 
 go 1.18
 
