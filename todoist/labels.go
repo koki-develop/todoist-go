@@ -1,5 +1,7 @@
 package todoist
 
+import "fmt"
+
 type Label struct {
 	// Label ID.
 	ID int `json:"id"`
@@ -25,6 +27,16 @@ func (cl *Client) GetLabels() (Labels, error) {
 	}
 
 	return labels, nil
+}
+
+// Gets a label.
+func (cl *Client) GetLabel(id int) (*Label, error) {
+	label := Label{}
+	if err := cl.get(fmt.Sprintf("/v1/labels/%d", id), nil, &label); err != nil {
+		return nil, err
+	}
+
+	return &label, nil
 }
 
 // Options for creating a label.
