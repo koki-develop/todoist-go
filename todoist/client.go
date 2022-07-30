@@ -29,12 +29,7 @@ func New(token string) *Client {
 }
 
 func (cl *Client) get(p string, params map[string]string, out interface{}) error {
-	ep, err := cl.buildEndpoint(p, params)
-	if err != nil {
-		return err
-	}
-
-	body, err := cl.sendRequest(ep, http.MethodGet, nil, nil)
+	body, err := cl.sendRequest(p, params, http.MethodGet, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -47,12 +42,7 @@ func (cl *Client) get(p string, params map[string]string, out interface{}) error
 }
 
 func (cl *Client) post(p string, payload map[string]interface{}, reqID *string, out interface{}) error {
-	ep, err := cl.buildEndpoint(p, nil)
-	if err != nil {
-		return err
-	}
-
-	body, err := cl.sendRequest(ep, http.MethodPost, payload, reqID)
+	body, err := cl.sendRequest(p, nil, http.MethodPost, payload, reqID)
 	if err != nil {
 		return err
 	}
@@ -65,12 +55,7 @@ func (cl *Client) post(p string, payload map[string]interface{}, reqID *string, 
 }
 
 func (cl *Client) postWithoutBind(p string, payload map[string]interface{}, reqID *string) error {
-	ep, err := cl.buildEndpoint(p, nil)
-	if err != nil {
-		return err
-	}
-
-	if _, err := cl.sendRequest(ep, http.MethodPost, payload, reqID); err != nil {
+	if _, err := cl.sendRequest(p, nil, http.MethodPost, payload, reqID); err != nil {
 		return err
 	}
 
@@ -78,12 +63,7 @@ func (cl *Client) postWithoutBind(p string, payload map[string]interface{}, reqI
 }
 
 func (cl *Client) delete(p string, reqID *string) error {
-	ep, err := cl.buildEndpoint(p, nil)
-	if err != nil {
-		return err
-	}
-
-	if _, err := cl.sendRequest(ep, http.MethodDelete, nil, reqID); err != nil {
+	if _, err := cl.sendRequest(p, nil, http.MethodDelete, nil, reqID); err != nil {
 		return err
 	}
 
@@ -127,9 +107,13 @@ func (cl *Client) buildRequest(ep, method string, payload map[string]interface{}
 	}
 }
 
-func (cl *Client) sendRequest(ep, method string, payload map[string]interface{}, reqID *string) (io.Reader, error) {
-	req := cl.buildRequest(ep, method, payload, reqID)
+func (cl *Client) sendRequest(p string, params map[string]string, method string, payload map[string]interface{}, reqID *string) (io.Reader, error) {
+	ep, err := cl.buildEndpoint(p, params)
+	if err != nil {
+		return nil, err
+	}
 
+	req := cl.buildRequest(ep, method, payload, reqID)
 	resp, err := cl.restAPI.Do(req)
 	if err != nil {
 		return nil, err
