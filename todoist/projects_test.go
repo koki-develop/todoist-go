@@ -9,11 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func newClientForTest() (*Client, *mockRestAPI) {
-	api := &mockRestAPI{}
-	return &Client{token: "TOKEN", restAPI: api}, api
-}
-
 func TestClient_GetProjects(t *testing.T) {
 	tests := []struct {
 		name    string
