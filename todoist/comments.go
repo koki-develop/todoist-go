@@ -74,6 +74,16 @@ func (cl *Client) GetTaskComments(taskID int) (Comments, error) {
 	return cmts, nil
 }
 
+// Gets a comment.
+func (cl *Client) GetComment(id int) (*Comment, error) {
+	cmt := Comment{}
+	if err := cl.get(fmt.Sprintf("/v1/comments/%d", id), nil, &cmt); err != nil {
+		return nil, err
+	}
+
+	return &cmt, nil
+}
+
 // Options for creating attachment.
 type UploadAttachmentOptions struct {
 	ResourceType *string
