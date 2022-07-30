@@ -54,6 +54,7 @@ func TestClient_GetProjects(t *testing.T) {
 			assert.Equal(t, tt.want, projs)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -110,6 +111,7 @@ func TestClient_GetProject(t *testing.T) {
 			assert.Equal(t, tt.want, proj)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -163,9 +165,10 @@ func TestClient_CreateProject(t *testing.T) {
 
 			proj, err := cl.CreateProject(tt.args.name)
 
+			assert.Equal(t, tt.want, proj)
 			if tt.wantErr {
-				assert.Nil(t, proj)
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.Equal(t, tt.want, proj)
 				assert.NoError(t, err)
@@ -221,11 +224,11 @@ func TestClient_CreateProjectWithOptions(t *testing.T) {
 
 			proj, err := cl.CreateProjectWithOptions(tt.args.name, tt.args.opts)
 
+			assert.Equal(t, tt.want, proj)
 			if tt.wantErr {
-				assert.Nil(t, proj)
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
-				assert.Equal(t, tt.want, proj)
 				assert.NoError(t, err)
 			}
 			api.AssertExpectations(t)
@@ -278,6 +281,7 @@ func TestClient_UpdateProjectWithOptions(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -329,6 +333,7 @@ func TestClient_DeleteProject(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -381,6 +386,7 @@ func TestClient_DeleteProjectWithOptions(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -436,6 +442,7 @@ func TestClient_GetCollaborators(t *testing.T) {
 			assert.Equal(t, tt.want, users)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}

@@ -56,6 +56,7 @@ func TestClient_GetProjectComments(t *testing.T) {
 			assert.Equal(t, tt.want, cmts)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -111,6 +112,7 @@ func TestClient_GetTaskComments(t *testing.T) {
 			assert.Equal(t, tt.want, cmts)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -166,6 +168,7 @@ func TestClient_GetComment(t *testing.T) {
 			assert.Equal(t, tt.want, cmt)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -223,6 +226,7 @@ func TestClient_CreateProjectComment(t *testing.T) {
 			assert.Equal(t, tt.want, cmt)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -306,6 +310,7 @@ func TestClient_CreateProjectCommentWithOptions(t *testing.T) {
 			assert.Equal(t, tt.want, cmt)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -363,6 +368,7 @@ func TestClient_CreateTaskComment(t *testing.T) {
 			assert.Equal(t, tt.want, cmt)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -446,6 +452,7 @@ func TestClient_CreateTaskCommentWithOptions(t *testing.T) {
 			assert.Equal(t, tt.want, cmt)
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -499,6 +506,7 @@ func TestClient_UpdateComment(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -561,6 +569,7 @@ func TestClient_UpdateCommentWithOptions(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -612,6 +621,7 @@ func TestClient_DeleteComment(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -664,6 +674,7 @@ func TestClient_DeleteCommentWithOptions(t *testing.T) {
 
 			if tt.wantErr {
 				assert.Error(t, err)
+				assert.IsType(t, RequestError{}, err)
 			} else {
 				assert.NoError(t, err)
 			}
