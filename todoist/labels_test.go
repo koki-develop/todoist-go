@@ -112,3 +112,75 @@ func TestClient_CreateLabel(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_CreateLabelWithOptions(t *testing.T) {
+	type args struct {
+		name string
+		opts *CreateLabelOptions
+	}
+	tests := []struct {
+		name    string
+		args    args
+		resp    *restResponse
+		want    *Label
+		wantErr bool
+	}{
+		{
+			name: "should return a label",
+			args: args{name: "LABEL", opts: &CreateLabelOptions{
+				RequestID: String("REQUEST_ID"),
+				Order:     Int(1),
+				Color:     Int(2),
+				Favorite:  Bool(true),
+			}},
+			resp: &restResponse{
+				StatusCode: http.StatusOK,
+				Body:       strings.NewReader(`{ "id": 1, "name": "LABEL" }`),
+			},
+			want:    &Label{ID: 1, Name: "LABEL"},
+			wantErr: false,
+		},
+		{
+			name: "should return an error if the request fails",
+			args: args{name: "LABEL", opts: &CreateLabelOptions{
+				RequestID: String("REQUEST_ID"),
+				Order:     Int(1),
+				Color:     Int(2),
+				Favorite:  Bool(true),
+			}},
+			resp: &restResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       strings.NewReader("ERROR_RESPONSE"),
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, api := newClientForTest()
+
+			api.On("Do", &restRequest{
+				URL:    "https://api.todoist.com/rest/v1/labels",
+				Method: http.MethodPost,
+				Payload: map[string]interface{}{
+					"name":     tt.args.name,
+					"order":    *tt.args.opts.Order,
+					"color":    *tt.args.opts.Color,
+					"favorite": *tt.args.opts.Favorite,
+				},
+				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
+			}).Return(tt.resp, nil)
+
+			label, err := cl.CreateLabelWithOptions(tt.args.name, tt.args.opts)
+
+			assert.Equal(t, tt.want, label)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			api.AssertExpectations(t)
+		})
+	}
+}
