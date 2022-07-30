@@ -2,7 +2,6 @@ package todoist
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -140,9 +139,9 @@ func (cl *Client) sendRequest(ep, method string, payload map[string]interface{},
 		return resp.Body, nil
 	}
 
-	b, err := io.ReadAll(resp.Body)
+	reqerr, err := newRequestError(resp)
 	if err != nil {
 		return nil, err
 	}
-	return nil, errors.New(string(b))
+	return nil, reqerr
 }
