@@ -85,7 +85,7 @@ func (cl *Client) GetComment(id int) (*Comment, error) {
 }
 
 // Options for creating attachment.
-type UploadAttachmentOptions struct {
+type CreateAttachmentOptions struct {
 	ResourceType *string
 	FileName     *string
 	FileURL      *string
@@ -97,7 +97,7 @@ type CreateProjectCommentOptions struct {
 	RequestID *string
 
 	// Object for attachment object.
-	Attachment *UploadAttachmentOptions
+	Attachment *CreateAttachmentOptions
 }
 
 // Creates a comment for a project.
@@ -134,7 +134,7 @@ type CreateTaskCommentOptions struct {
 	RequestID *string
 
 	// Object for attachment object.
-	Attachment *UploadAttachmentOptions
+	Attachment *CreateAttachmentOptions
 }
 
 // Creates a comment for a task.

@@ -248,7 +248,7 @@ func TestClient_CreateProjectCommentWithOptions(t *testing.T) {
 			name: "should return a comment",
 			args: args{projectID: 1, content: "COMMENT", opts: &CreateProjectCommentOptions{
 				RequestID: String("REQUEST_ID"),
-				Attachment: &UploadAttachmentOptions{
+				Attachment: &CreateAttachmentOptions{
 					ResourceType: String("RESOURCE_TYPE"),
 					FileName:     String("FILE_NAME"),
 					FileURL:      String("FILE_URL"),
@@ -266,7 +266,7 @@ func TestClient_CreateProjectCommentWithOptions(t *testing.T) {
 			name: "should return an error if the request fails",
 			args: args{projectID: 1, content: "COMMENT", opts: &CreateProjectCommentOptions{
 				RequestID: String("REQUEST_ID"),
-				Attachment: &UploadAttachmentOptions{
+				Attachment: &CreateAttachmentOptions{
 					ResourceType: String("RESOURCE_TYPE"),
 					FileName:     String("FILE_NAME"),
 					FileURL:      String("FILE_URL"),
@@ -388,7 +388,7 @@ func TestClient_CreateTaskCommentWithOptions(t *testing.T) {
 			name: "should return a comment",
 			args: args{taskID: 1, content: "COMMENT", opts: &CreateTaskCommentOptions{
 				RequestID: String("REQUEST_ID"),
-				Attachment: &UploadAttachmentOptions{
+				Attachment: &CreateAttachmentOptions{
 					ResourceType: String("RESOURCE_TYPE"),
 					FileName:     String("FILE_NAME"),
 					FileURL:      String("FILE_URL"),
@@ -406,7 +406,7 @@ func TestClient_CreateTaskCommentWithOptions(t *testing.T) {
 			name: "should return an error if the request fails",
 			args: args{taskID: 1, content: "COMMENT", opts: &CreateTaskCommentOptions{
 				RequestID: String("REQUEST_ID"),
-				Attachment: &UploadAttachmentOptions{
+				Attachment: &CreateAttachmentOptions{
 					ResourceType: String("RESOURCE_TYPE"),
 					FileName:     String("FILE_NAME"),
 					FileURL:      String("FILE_URL"),
