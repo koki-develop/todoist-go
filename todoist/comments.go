@@ -190,3 +190,27 @@ func (cl *Client) UpdateCommentWithOptions(id int, content string, opts *UpdateC
 
 	return nil
 }
+
+// Options for deleting a comment.
+type DeleteCommentOptions struct {
+	RequestID *string
+}
+
+// Deletes a comment.
+func (cl *Client) DeleteComment(id int) error {
+	return cl.DeleteCommentWithOptions(id, nil)
+}
+
+// Deletes a comment with options.
+func (cl *Client) DeleteCommentWithOptions(id int, opts *DeleteCommentOptions) error {
+	var reqID *string
+	if opts != nil {
+		reqID = opts.RequestID
+	}
+
+	if err := cl.delete(fmt.Sprintf("/v1/comments/%d", id), reqID); err != nil {
+		return err
+	}
+
+	return nil
+}
