@@ -53,6 +53,7 @@ type Attachment struct {
 	TnS []interface{} `json:"tn_s"`
 }
 
+// Gets list of all comments for a project.
 func (cl *Client) GetProjectComments(projectID int) (Comments, error) {
 	cmts := Comments{}
 	if err := cl.get("/v1/comments", map[string]string{"project_id": strconv.Itoa(projectID)}, &cmts); err != nil {
@@ -61,10 +62,74 @@ func (cl *Client) GetProjectComments(projectID int) (Comments, error) {
 	return cmts, nil
 }
 
+// Gets list of all comments for a task.
 func (cl *Client) GetTaskComments(taskID int) (Comments, error) {
 	cmts := Comments{}
 	if err := cl.get("/v1/comments", map[string]string{"task_id": strconv.Itoa(taskID)}, &cmts); err != nil {
 		return nil, err
 	}
 	return cmts, nil
+}
+
+// Options for creating a comment.
+type CreateProjectCommentOptions struct {
+	RequestID *string
+
+	// Object for attachment object.
+	Attachment *Attachment
+}
+
+// Creates a comment for a project.
+func (cl *Client) CreateProjectComment(projectID int, content string) (*Comment, error) {
+	return cl.CreateProjectCommentWithOptions(projectID, content, nil)
+}
+
+// Creates a comment for a project with options.
+func (cl *Client) CreateProjectCommentWithOptions(projectID int, content string, opts *CreateProjectCommentOptions) (*Comment, error) {
+	p := map[string]interface{}{"project_id": projectID, "content": content}
+	var reqID *string
+	if opts != nil {
+		reqID = opts.RequestID
+		if opts.Attachment != nil {
+			p["attachment"] = *opts.Attachment
+		}
+	}
+
+	cmt := Comment{}
+	if err := cl.post("/v1/comments", p, reqID, &cmt); err != nil {
+		return nil, err
+	}
+
+	return &cmt, nil
+}
+
+type CreateTaskCommentOptions struct {
+	RequestID *string
+
+	// Object for attachment object.
+	Attachment *Attachment
+}
+
+// Creates a comment for a task.
+func (cl *Client) CreateTaskComment(taskID int, content string) (*Comment, error) {
+	return cl.CreateTaskCommentWithOptions(taskID, content, nil)
+}
+
+// Creates a comment for a task with options.
+func (cl *Client) CreateTaskCommentWithOptions(taskID int, content string, opts *CreateTaskCommentOptions) (*Comment, error) {
+	p := map[string]interface{}{"task_id": taskID, "content": content}
+	var reqID *string
+	if opts != nil {
+		reqID = opts.RequestID
+		if opts.Attachment != nil {
+			p["attachment"] = *opts.Attachment
+		}
+	}
+
+	cmt := Comment{}
+	if err := cl.post("/v1/comments", p, reqID, &cmt); err != nil {
+		return nil, err
+	}
+
+	return &cmt, nil
 }
