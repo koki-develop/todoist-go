@@ -28,7 +28,7 @@ go get github.com/koki-develop/todoist-go
 ## Import
 
 ```go
-import "github.com/koki-develop/todoist-go/todoist"
+import "github.com/koki-develop/todoist-go"
 ```
 
 ## Example
@@ -41,7 +41,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/koki-develop/todoist-go/todoist"
+	"github.com/koki-develop/todoist-go"
 )
 
 func main() {
@@ -70,7 +70,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/koki-develop/todoist-go/todoist"
+	"github.com/koki-develop/todoist-go"
 )
 
 func main() {
@@ -94,7 +94,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/koki-develop/todoist-go/todoist"
+	"github.com/koki-develop/todoist-go"
 )
 
 func main() {
@@ -126,7 +126,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/koki-develop/todoist-go/todoist"
+	"github.com/koki-develop/todoist-go"
 )
 
 func main() {
@@ -148,7 +148,7 @@ func main() {
 
 ## Documentation
 
-For more information, see [todoist-go/todoist](https://pkg.go.dev/github.com/koki-develop/todoist-go/todoist).
+For more information, see [todoist-go](https://pkg.go.dev/github.com/koki-develop/todoist-go).
 
 ## LICENSE
 
