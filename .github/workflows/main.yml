@@ -28,3 +28,6 @@ jobs:
       - name: upload coverage to codecov
         if: matrix.os == 'ubuntu-latest' && matrix.go-version == '1.18'
         uses: codecov/codecov-action@v3
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
