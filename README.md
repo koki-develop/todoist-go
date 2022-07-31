@@ -6,19 +6,17 @@
 
 # todoist-go
 
-This is an unofficial Go client library for accessing the [Todoist APIs](https://developer.todoist.com/guides/#our-apis).
+This is an unofficial Go client library for accessing the [Todoist REST API](https://developer.todoist.com/rest/v1).
 
 ## Contents
 
 - [Installation](#installation)
-- [REST API Client](#rest-api-client)
-  - [Import](#import)
-  - [Example](#example)
-    - [Get all projects](#get-all-projects)
-    - [Create a new task](#create-a-new-task)
-	- [Handling Errors](#handling-errors)
-  - [Documentation](#documentation)
-- [Sync API Client](#sync-api-client)
+- [Import](#import)
+- [Example](#example)
+  - [Get all projects](#get-all-projects)
+  - [Create a new task](#create-a-new-task)
+  - [Handling Errors](#handling-errors)
+- [Documentation](#documentation)
 - [LICENSE](#license)
 
 ## Installation
@@ -27,19 +25,15 @@ This is an unofficial Go client library for accessing the [Todoist APIs](https:/
 go get github.com/koki-develop/todoist-go
 ```
 
-## REST API Client
-
-[`todoist-go/todoist`](https://pkg.go.dev/github.com/koki-develop/todoist-go/todoist) is a package for accessing the [Todoist REST API](https://developer.todoist.com/rest/v1).
-
-### Import
+## Import
 
 ```go
 import "github.com/koki-develop/todoist-go/todoist"
 ```
 
-### Example
+## Example
 
-#### Get all projects
+### Get all projects
 
 ```go
 package main
@@ -68,7 +62,7 @@ func main() {
 }
 ```
 
-#### Create a new task
+### Create a new task
 
 ```go
 package main
@@ -121,7 +115,7 @@ func main() {
 }
 ```
 
-#### Handling Errors
+### Handling Errors
 
 todoist-go returns a `RequestError` with status code and body when an error response is returned from the Todoist REST API.
 
@@ -152,13 +146,9 @@ func main() {
 }
 ```
 
-### Documentation
+## Documentation
 
 For more information, see [todoist-go/todoist](https://pkg.go.dev/github.com/koki-develop/todoist-go/todoist).
-
-## Sync API Client
-
-In development.
 
 ## LICENSE
 
