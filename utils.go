@@ -11,6 +11,9 @@ func String(s string) *string { return &s }
 // Returns a int as a pointer.
 func Int(i int) *int { return &i }
 
+// Returns ints as a pointer.
+func Ints(is ...int) *[]int { return &is }
+
 // Returns a bool as a pointer.
 func Bool(b bool) *bool { return &b }
 
