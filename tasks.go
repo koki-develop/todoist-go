@@ -71,7 +71,7 @@ type GetTasksOptions struct {
 	// IETF language tag defining what language filter is written in, if differs from default English.
 	Lang *string
 	// A list of the task IDs to retrieve, this should be a comma separated list.
-	IDs []int
+	IDs *[]int
 }
 
 // Gets list of all active tasks.
@@ -88,8 +88,8 @@ func (cl *Client) GetTasksWithOptions(opts *GetTasksOptions) (Tasks, error) {
 		addOptionalIntToStringMap(p, "label_id", opts.LabelID)
 		addOptionalStringToStringMap(p, "filter", opts.Filter)
 		addOptionalStringToStringMap(p, "lang", opts.Lang)
-		if len(opts.IDs) > 0 {
-			ids := strings.Join(intsToStrings(opts.IDs), ",")
+		if opts.IDs != nil {
+			ids := strings.Join(intsToStrings(*opts.IDs), ",")
 			addOptionalStringToStringMap(p, "ids", &ids)
 		}
 	}
@@ -130,7 +130,7 @@ type CreateTaskOptions struct {
 	// Non-zero integer value used by clients to sort tasks under the same parent.
 	Order *int
 	// IDs of labels associated with the task.
-	LabelIDs []int
+	LabelIDs *[]int
 	// Task priority from 1 (normal) to 4 (urgent).
 	Priority *int
 	// Human defined (https://todoist.com/help/articles/due-dates-and-times) task due date (ex.: "next Monday", "Tomorrow"). Value is set using local (not UTC) time.
@@ -161,8 +161,8 @@ func (cl *Client) CreateTaskWithOptions(content string, opts *CreateTaskOptions)
 		addOptionalIntToMap(p, "section_id", opts.SectionID)
 		addOptionalIntToMap(p, "parent_id", opts.ParentID)
 		addOptionalIntToMap(p, "order", opts.Order)
-		if len(opts.LabelIDs) > 0 {
-			ids := strings.Join(intsToStrings(opts.LabelIDs), ",")
+		if opts.LabelIDs != nil {
+			ids := strings.Join(intsToStrings(*opts.LabelIDs), ",")
 			addOptionalStringToMap(p, "label_ids", &ids)
 		}
 		addOptionalIntToMap(p, "priority", opts.Priority)
@@ -194,7 +194,7 @@ type UpdateTaskOptions struct {
 	// Details on markdown support can be found in the Text Formatting article (https://todoist.com/help/articles/text-formatting) in the Help Center.
 	Description *string
 	// IDs of labels associated with the task.
-	LabelIDs []int
+	LabelIDs *[]int
 	// Task priority from 1 (normal) to 4 (urgent).
 	Priority *int
 	// Human defined (https://todoist.com/help/articles/due-dates-and-times) task due date (ex.: "next Monday", "Tomorrow"). Value is set using local (not UTC) time.
