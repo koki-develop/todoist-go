@@ -3,6 +3,8 @@ package todoist
 import (
 	"sort"
 	"strconv"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 // Returns a string as a pointer.
@@ -67,4 +69,27 @@ func getSortedKeysFromStringMap(m map[string]string) []string {
 	keys := getKeysFromStringMap(m)
 	sort.Strings(keys)
 	return keys
+}
+
+func toMap(obj interface{}, dest map[string]interface{}) error {
+	if obj == nil {
+		return nil
+	}
+
+	var m map[string]interface{}
+	cfg := &mapstructure.DecoderConfig{TagName: "json", Result: &m}
+	dec, err := mapstructure.NewDecoder(cfg)
+	if err != nil {
+		return err
+	}
+
+	if err := dec.Decode(obj); err != nil {
+		return err
+	}
+
+	for k, v := range m {
+		dest[k] = v
+	}
+
+	return nil
 }
