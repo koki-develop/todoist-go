@@ -229,7 +229,7 @@ func (cl *Client) CloseTaskWithOptions(id int, opts *CloseTaskOptions) error {
 
 // Options for reopening a task.
 type ReopenTaskOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 }
 
 // Reopens a task.
