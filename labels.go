@@ -113,7 +113,7 @@ func (cl *Client) UpdateLabelWithOptions(id int, opts *UpdateLabelOptions) error
 
 // Options for deleting a label.
 type DeleteLabelOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 }
 
 // Deletes a label.
