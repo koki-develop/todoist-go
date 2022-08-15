@@ -84,7 +84,7 @@ func (cl *Client) CreateSectionWithOptions(name string, projectID int, opts *Cre
 
 // Options for updating a section.
 type UpdateSectionOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 }
 
 // Updates a section.
@@ -94,11 +94,12 @@ func (cl *Client) UpdateSection(id int, name string) error {
 
 // Updates a section with options.
 func (cl *Client) UpdateSectionWithOptions(id int, name string, opts *UpdateSectionOptions) error {
-	p := map[string]interface{}{"name": name}
 	var reqID *string
 	if opts != nil {
 		reqID = opts.RequestID
 	}
+
+	p := map[string]interface{}{"name": name}
 
 	if err := cl.postWithoutBind(fmt.Sprintf("/v1/sections/%d", id), p, reqID); err != nil {
 		return err
