@@ -1,7 +1,6 @@
 package todoist
 
 import (
-	"sort"
 	"strconv"
 
 	"github.com/mitchellh/mapstructure"
@@ -43,32 +42,12 @@ func addOptionalStringToStringMap(m map[string]string, k string, v *string) {
 	}
 }
 
-func addOptionalIntToStringMap(m map[string]string, k string, v *int) {
-	if v != nil {
-		m[k] = strconv.Itoa(*v)
-	}
-}
-
 func intsToStrings(is []int) []string {
 	ss := []string{}
 	for _, i := range is {
 		ss = append(ss, strconv.Itoa(i))
 	}
 	return ss
-}
-
-func getKeysFromStringMap(m map[string]string) []string {
-	keys := []string{}
-	for k := range m {
-		keys = append(keys, k)
-	}
-	return keys
-}
-
-func getSortedKeysFromStringMap(m map[string]string) []string {
-	keys := getKeysFromStringMap(m)
-	sort.Strings(keys)
-	return keys
 }
 
 func toMap(obj interface{}, dest map[string]interface{}) error {
