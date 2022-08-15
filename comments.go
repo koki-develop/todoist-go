@@ -191,7 +191,7 @@ func (cl *Client) UpdateCommentWithOptions(id int, content string, opts *UpdateC
 
 // Options for deleting a comment.
 type DeleteCommentOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 }
 
 // Deletes a comment.
