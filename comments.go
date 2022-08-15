@@ -2,7 +2,6 @@ package todoist
 
 import (
 	"fmt"
-	"strconv"
 )
 
 type Comment struct {
@@ -58,15 +57,20 @@ type Attachment struct {
 
 // Gets list of all comments for a project.
 func (cl *Client) GetProjectComments(projectID int) (Comments, error) {
-	return cl.getComments(map[string]string{"project_id": strconv.Itoa(projectID)})
+	return cl.getComments(getCommentsParams{ProjectID: &projectID})
 }
 
 // Gets list of all comments for a task.
 func (cl *Client) GetTaskComments(taskID int) (Comments, error) {
-	return cl.getComments(map[string]string{"task_id": strconv.Itoa(taskID)})
+	return cl.getComments(getCommentsParams{TaskID: &taskID})
 }
 
-func (cl *Client) getComments(p map[string]string) (Comments, error) {
+type getCommentsParams struct {
+	ProjectID *int `url:"project_id,omitempty"`
+	TaskID    *int `url:"task_id,omitempty"`
+}
+
+func (cl *Client) getComments(p getCommentsParams) (Comments, error) {
 	cmts := Comments{}
 	if err := cl.get("/v1/comments", p, &cmts); err != nil {
 		return nil, err

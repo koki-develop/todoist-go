@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -28,7 +30,7 @@ func New(token string) *Client {
 	}
 }
 
-func (cl *Client) get(p string, params map[string]string, out interface{}) error {
+func (cl *Client) get(p string, params interface{}, out interface{}) error {
 	body, err := cl.sendRequest(p, params, http.MethodGet, nil, nil)
 	if err != nil {
 		return err
@@ -70,7 +72,7 @@ func (cl *Client) delete(p string, reqID *string) error {
 	return nil
 }
 
-func (cl *Client) buildEndpoint(p string, params map[string]string) (string, error) {
+func (cl *Client) buildEndpoint(p string, params interface{}) (string, error) {
 	u, err := url.Parse(apiBaseUrl)
 	if err != nil {
 		return "", err
@@ -78,11 +80,11 @@ func (cl *Client) buildEndpoint(p string, params map[string]string) (string, err
 	u.Path = path.Join(u.Path, p)
 
 	if params != nil {
-		q := u.Query()
-		for _, k := range getSortedKeysFromStringMap(params) {
-			q.Add(k, params[k])
+		v, err := query.Values(params)
+		if err != nil {
+			return "", err
 		}
-		u.RawQuery = q.Encode()
+		u.RawQuery = v.Encode()
 	}
 
 	return u.String(), nil
@@ -107,7 +109,7 @@ func (cl *Client) buildRequest(ep, method string, payload map[string]interface{}
 	}
 }
 
-func (cl *Client) sendRequest(p string, params map[string]string, method string, payload map[string]interface{}, reqID *string) (io.Reader, error) {
+func (cl *Client) sendRequest(p string, params interface{}, method string, payload map[string]interface{}, reqID *string) (io.Reader, error) {
 	ep, err := cl.buildEndpoint(p, params)
 	if err != nil {
 		return nil, err
