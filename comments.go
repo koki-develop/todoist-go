@@ -165,7 +165,7 @@ func (cl *Client) CreateTaskCommentWithOptions(taskID int, content string, opts 
 
 // Options for updating a comment.
 type UpdateCommentOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 }
 
 // Updates a comment.
@@ -175,11 +175,12 @@ func (cl *Client) UpdateComment(id int, content string) error {
 
 // Updates a comment with options.
 func (cl *Client) UpdateCommentWithOptions(id int, content string, opts *UpdateCommentOptions) error {
-	p := map[string]interface{}{"content": content}
 	var reqID *string
 	if opts != nil {
 		reqID = opts.RequestID
 	}
+
+	p := map[string]interface{}{"content": content}
 
 	if err := cl.postWithoutBind(fmt.Sprintf("/v1/comments/%d", id), p, reqID); err != nil {
 		return err
