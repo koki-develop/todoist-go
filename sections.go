@@ -21,7 +21,7 @@ type Sections []*Section
 // Options for getting a sections.
 type GetSectionsOptions struct {
 	// Filter sections by project ID.
-	ProjectID *int
+	ProjectID *int `url:"project_id,omitempty"`
 }
 
 // Gets list of all sections.
@@ -31,13 +31,8 @@ func (cl *Client) GetSections() (Sections, error) {
 
 // Gets list of all sections with options.
 func (cl *Client) GetSectionsWithOptions(opts *GetSectionsOptions) (Sections, error) {
-	p := map[string]string{}
-	if opts != nil {
-		addOptionalIntToStringMap(p, "project_id", opts.ProjectID)
-	}
-
 	secs := Sections{}
-	if err := cl.get("/v1/sections", p, &secs); err != nil {
+	if err := cl.get("/v1/sections", opts, &secs); err != nil {
 		return nil, err
 	}
 
