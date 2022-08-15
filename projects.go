@@ -60,15 +60,15 @@ func (cl *Client) GetProject(id int) (*Project, error) {
 
 // Options for creating a project.
 type CreateProjectOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 
 	// Parent project ID.
-	ParentID *int
+	ParentID *int `json:"parent_id,omitempty"`
 	// A numeric ID representing the color of the project icon.
 	// Refer to the id column in the Colors guide (https://developer.todoist.com/guides/#colors) for more info.
-	Color *int
+	Color *int `json:"color,omitempty"`
 	// Whether the project is a favorite (a true or false value).
-	Favorite *bool
+	Favorite *bool `json:"favorite,omitempty"`
 }
 
 // Creates a new project and returns it.
@@ -82,9 +82,9 @@ func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptio
 	var reqID *string
 	if opts != nil {
 		reqID = opts.RequestID
-		addOptionalIntToMap(p, "parent_id", opts.ParentID)
-		addOptionalIntToMap(p, "color", opts.Color)
-		addOptionalBoolToMap(p, "favorite", opts.Favorite)
+		if err := toMap(opts, p); err != nil {
+			return nil, err
+		}
 	}
 
 	proj := Project{}
@@ -97,26 +97,27 @@ func (cl *Client) CreateProjectWithOptions(name string, opts *CreateProjectOptio
 
 // Options for updating a project.
 type UpdateProjectOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 
 	// Name of the project.
-	Name *string
+	Name *string `json:"name,omitempty"`
 	// A numeric ID representing the color of the project icon.
 	// Refer to the id column in the Colors guide (https://developer.todoist.com/guides/#colors) for more info.
-	Color *int
+	Color *int `json:"color,omitempty"`
 	// Whether the project is a favorite (a true or false value).
-	Favorite *bool
+	Favorite *bool `json:"favorite,omitempty"`
 }
 
 // Updates a project.
 func (cl *Client) UpdateProjectWithOptions(id int, opts *UpdateProjectOptions) error {
-	p := map[string]interface{}{}
 	var reqID *string = nil
 	if opts != nil {
 		reqID = opts.RequestID
-		addOptionalStringToMap(p, "name", opts.Name)
-		addOptionalIntToMap(p, "color", opts.Color)
-		addOptionalBoolToMap(p, "favorite", opts.Favorite)
+	}
+
+	p := map[string]interface{}{}
+	if err := toMap(opts, p); err != nil {
+		return err
 	}
 
 	if err := cl.postWithoutBind(fmt.Sprintf("/v1/projects/%d", id), p, reqID); err != nil {

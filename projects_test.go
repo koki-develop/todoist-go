@@ -218,7 +218,7 @@ func TestClient_CreateProjectWithOptions(t *testing.T) {
 			api.On("Do", &restRequest{
 				URL:     "https://api.todoist.com/rest/v1/projects",
 				Method:  http.MethodPost,
-				Payload: map[string]interface{}{"name": tt.args.name, "parent_id": *tt.args.opts.ParentID, "color": *tt.args.opts.Color, "favorite": *tt.args.opts.Favorite},
+				Payload: map[string]interface{}{"name": tt.args.name, "parent_id": tt.args.opts.ParentID, "color": tt.args.opts.Color, "favorite": tt.args.opts.Favorite},
 				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
 			}).Return(tt.resp, nil)
 
@@ -273,7 +273,7 @@ func TestClient_UpdateProjectWithOptions(t *testing.T) {
 			api.On("Do", &restRequest{
 				URL:     fmt.Sprintf("https://api.todoist.com/rest/v1/projects/%d", tt.args.id),
 				Method:  http.MethodPost,
-				Payload: map[string]interface{}{"name": *tt.args.opts.Name, "color": *tt.args.opts.Color, "favorite": *tt.args.opts.Favorite},
+				Payload: map[string]interface{}{"name": tt.args.opts.Name, "color": tt.args.opts.Color, "favorite": tt.args.opts.Favorite},
 				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
 			}).Return(tt.resp, nil)
 
