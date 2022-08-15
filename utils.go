@@ -18,30 +18,6 @@ func Ints(is ...int) *[]int { return &is }
 // Returns a bool as a pointer.
 func Bool(b bool) *bool { return &b }
 
-func addOptionalStringToMap(m map[string]interface{}, k string, v *string) {
-	if v != nil {
-		m[k] = *v
-	}
-}
-
-func addOptionalIntToMap(m map[string]interface{}, k string, v *int) {
-	if v != nil {
-		m[k] = *v
-	}
-}
-
-func addOptionalBoolToMap(m map[string]interface{}, k string, v *bool) {
-	if v != nil {
-		m[k] = *v
-	}
-}
-
-func addOptionalStringToStringMap(m map[string]string, k string, v *string) {
-	if v != nil {
-		m[k] = *v
-	}
-}
-
 func intsToStrings(is []int) []string {
 	ss := []string{}
 	for _, i := range is {
