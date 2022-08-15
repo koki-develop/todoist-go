@@ -129,7 +129,7 @@ func (cl *Client) UpdateProjectWithOptions(id int, opts *UpdateProjectOptions) e
 
 // Options for deleting a project.
 type DeleteProjectOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 }
 
 // Deletes a project.
