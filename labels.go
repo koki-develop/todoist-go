@@ -78,29 +78,29 @@ func (cl *Client) CreateLabelWithOptions(name string, opts *CreateLabelOptions) 
 
 // Options for updating a label.
 type UpdateLabelOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 
 	// New name of the label.
-	Name *string
+	Name *string `json:"name,omitempty"`
 	// Number that is used by clients to sort list of labels.
-	Order *int
+	Order *int `json:"order,omitempty"`
 	//	A numeric ID representing the color of the label icon.
 	// Refer to the id column in the Colors (https://developer.todoist.com/guides/#colors) guide for more info.
-	Color *int
+	Color *int `json:"color,omitempty"`
 	// Whether the label is a favorite (a true or false value).
-	Favorite *bool
+	Favorite *bool `json:"favorite,omitempty"`
 }
 
 // Updates a label with options.
 func (cl *Client) UpdateLabelWithOptions(id int, opts *UpdateLabelOptions) error {
-	p := map[string]interface{}{}
 	var reqID *string
 	if opts != nil {
 		reqID = opts.RequestID
-		addOptionalStringToMap(p, "name", opts.Name)
-		addOptionalIntToMap(p, "order", opts.Order)
-		addOptionalIntToMap(p, "color", opts.Color)
-		addOptionalBoolToMap(p, "favorite", opts.Favorite)
+	}
+
+	p := map[string]interface{}{}
+	if err := toMap(opts, p); err != nil {
+		return err
 	}
 
 	if err := cl.postWithoutBind(fmt.Sprintf("/v1/labels/%d", id), p, reqID); err != nil {

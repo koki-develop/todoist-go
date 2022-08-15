@@ -295,10 +295,10 @@ func TestClient_UpdateLabelWithOptions(t *testing.T) {
 				URL:    fmt.Sprintf("https://api.todoist.com/rest/v1/labels/%d", tt.args.id),
 				Method: http.MethodPost,
 				Payload: map[string]interface{}{
-					"name":     *tt.args.opts.Name,
-					"order":    *tt.args.opts.Order,
-					"color":    *tt.args.opts.Color,
-					"favorite": *tt.args.opts.Favorite,
+					"name":     tt.args.opts.Name,
+					"order":    tt.args.opts.Order,
+					"color":    tt.args.opts.Color,
+					"favorite": tt.args.opts.Favorite,
 				},
 				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
 			}).Return(tt.resp, nil)
