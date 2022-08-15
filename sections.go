@@ -51,10 +51,10 @@ func (cl *Client) GetSection(id int) (*Section, error) {
 
 // Options for creating a section.
 type CreateSectionOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 
 	// Order among other sections in a project.
-	Order *int
+	Order *int `json:"order,omitempty"`
 }
 
 // Creates a new section and returns it.
@@ -64,11 +64,14 @@ func (cl *Client) CreateSection(name string, projectID int) (*Section, error) {
 
 // Creates a new section with options and returns it.
 func (cl *Client) CreateSectionWithOptions(name string, projectID int, opts *CreateSectionOptions) (*Section, error) {
-	p := map[string]interface{}{"name": name, "project_id": projectID}
 	var reqID *string
 	if opts != nil {
-		addOptionalIntToMap(p, "order", opts.Order)
 		reqID = opts.RequestID
+	}
+
+	p := map[string]interface{}{"name": name, "project_id": projectID}
+	if err := toMap(opts, p); err != nil {
+		return nil, err
 	}
 
 	sec := Section{}

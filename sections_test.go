@@ -276,7 +276,7 @@ func TestClient_CreateSectionWithOptions(t *testing.T) {
 			api.On("Do", &restRequest{
 				URL:     "https://api.todoist.com/rest/v1/sections",
 				Method:  http.MethodPost,
-				Payload: map[string]interface{}{"name": tt.args.name, "project_id": tt.args.projectID, "order": *tt.args.opts.Order},
+				Payload: map[string]interface{}{"name": tt.args.name, "project_id": tt.args.projectID, "order": tt.args.opts.Order},
 				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
 			}).Return(tt.resp, nil)
 
