@@ -91,18 +91,18 @@ func (cl *Client) GetComment(id int) (*Comment, error) {
 
 // Options for creating attachment.
 type CreateAttachmentOptions struct {
-	ResourceType *string
-	FileName     *string
-	FileURL      *string
-	FileType     *string
+	ResourceType *string `json:"resource_type,omitempty"`
+	FileName     *string `json:"file_name,omitempty"`
+	FileURL      *string `json:"file_url,omitempty"`
+	FileType     *string `json:"file_type,omitempty"`
 }
 
 // Options for creating a comment for a project.
 type CreateProjectCommentOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 
 	// Object for attachment object.
-	Attachment *CreateAttachmentOptions
+	Attachment *CreateAttachmentOptions `json:"attachment,omitempty"`
 }
 
 // Creates a comment for a project.
@@ -112,18 +112,14 @@ func (cl *Client) CreateProjectComment(projectID int, content string) (*Comment,
 
 // Creates a comment for a project with options.
 func (cl *Client) CreateProjectCommentWithOptions(projectID int, content string, opts *CreateProjectCommentOptions) (*Comment, error) {
-	p := map[string]interface{}{"project_id": projectID, "content": content}
 	var reqID *string
 	if opts != nil {
 		reqID = opts.RequestID
-		if opts.Attachment != nil {
-			a := map[string]string{}
-			addOptionalStringToStringMap(a, "resource_type", opts.Attachment.ResourceType)
-			addOptionalStringToStringMap(a, "file_name", opts.Attachment.FileName)
-			addOptionalStringToStringMap(a, "file_url", opts.Attachment.FileURL)
-			addOptionalStringToStringMap(a, "file_type", opts.Attachment.FileType)
-			p["attachment"] = a
-		}
+	}
+
+	p := map[string]interface{}{"project_id": projectID, "content": content}
+	if err := toMap(opts, p); err != nil {
+		return nil, err
 	}
 
 	cmt := Comment{}

@@ -295,11 +295,11 @@ func TestClient_CreateProjectCommentWithOptions(t *testing.T) {
 				Payload: map[string]interface{}{
 					"project_id": tt.args.projectID,
 					"content":    tt.args.content,
-					"attachment": map[string]string{
-						"resource_type": *tt.args.opts.Attachment.ResourceType,
-						"file_name":     *tt.args.opts.Attachment.FileName,
-						"file_url":      *tt.args.opts.Attachment.FileURL,
-						"file_type":     *tt.args.opts.Attachment.FileType,
+					"attachment": map[string]interface{}{
+						"resource_type": tt.args.opts.Attachment.ResourceType,
+						"file_name":     tt.args.opts.Attachment.FileName,
+						"file_url":      tt.args.opts.Attachment.FileURL,
+						"file_type":     tt.args.opts.Attachment.FileType,
 					},
 				},
 				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
