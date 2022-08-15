@@ -61,17 +61,17 @@ type Due struct {
 // Options for getting a tasks.
 type GetTasksOptions struct {
 	// Filter tasks by project ID.
-	ProjectID *int
+	ProjectID *int `url:"project_id,omitempty"`
 	// Filter tasks by section ID.
-	SectionID *int
+	SectionID *int `url:"section_id,omitempty"`
 	// Filter tasks by label.
-	LabelID *int
+	LabelID *int `url:"label_id,omitempty"`
 	// Filter by any supported filter (https://todoist.com/help/articles/205248842).
-	Filter *string
+	Filter *string `url:"filter,omitempty"`
 	// IETF language tag defining what language filter is written in, if differs from default English.
-	Lang *string
+	Lang *string `url:"lang,omitempty"`
 	// A list of the task IDs to retrieve, this should be a comma separated list.
-	IDs *[]int
+	IDs *[]int `url:"ids,comma,omitempty"`
 }
 
 // Gets list of all active tasks.
@@ -81,21 +81,8 @@ func (cl *Client) GetTasks() (Tasks, error) {
 
 // Gets list of all active tasks with options.
 func (cl *Client) GetTasksWithOptions(opts *GetTasksOptions) (Tasks, error) {
-	p := map[string]string{}
-	if opts != nil {
-		addOptionalIntToStringMap(p, "project_id", opts.ProjectID)
-		addOptionalIntToStringMap(p, "section_id", opts.SectionID)
-		addOptionalIntToStringMap(p, "label_id", opts.LabelID)
-		addOptionalStringToStringMap(p, "filter", opts.Filter)
-		addOptionalStringToStringMap(p, "lang", opts.Lang)
-		if opts.IDs != nil {
-			ids := strings.Join(intsToStrings(*opts.IDs), ",")
-			addOptionalStringToStringMap(p, "ids", &ids)
-		}
-	}
-
 	tasks := Tasks{}
-	if err := cl.get("/v1/tasks", p, &tasks); err != nil {
+	if err := cl.get("/v1/tasks", opts, &tasks); err != nil {
 		return nil, err
 	}
 
