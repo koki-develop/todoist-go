@@ -2,7 +2,6 @@ package todoist
 
 import (
 	"fmt"
-	"strings"
 )
 
 type Task struct {
@@ -101,35 +100,35 @@ func (cl *Client) GetTask(id int) (*Task, error) {
 
 // Options for creating a task.
 type CreateTaskOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 
 	// A description for the task.
 	// This value may contain markdown-formatted text and hyperlinks.
 	// Details on markdown support can be found in the Text Formatting article (https://todoist.com/help/articles/text-formatting) in the Help Center.
-	Description *string
+	Description *string `json:"description,omitempty"`
 	// Task project ID.
 	// If not set, task is put to user's Inbox.
-	ProjectID *int
+	ProjectID *int `json:"project_id,omitempty"`
 	// ID of section to put task into.
-	SectionID *int
+	SectionID *int `json:"section_id,omitempty"`
 	// Parent task ID.
-	ParentID *int
+	ParentID *int `json:"parent_id,omitempty"`
 	// Non-zero integer value used by clients to sort tasks under the same parent.
-	Order *int
+	Order *int `json:"order,omitempty"`
 	// IDs of labels associated with the task.
-	LabelIDs *[]int
+	LabelIDs *[]int `json:"label_ids,omitempty"`
 	// Task priority from 1 (normal) to 4 (urgent).
-	Priority *int
+	Priority *int `json:"priority,omitempty"`
 	// Human defined (https://todoist.com/help/articles/due-dates-and-times) task due date (ex.: "next Monday", "Tomorrow"). Value is set using local (not UTC) time.
-	DueString *string
+	DueString *string `json:"due_string,omitempty"`
 	// Specific date in YYYY-MM-DD format relative to user’s timezone.
-	DueDate *string
+	DueDate *string `json:"due_date,omitempty"`
 	// Specific date and time in RFC3339 (https://www.ietf.org/rfc/rfc3339.txt) format in UTC.
-	DueDatetime *string
+	DueDatetime *string `json:"due_datetime,omitempty"`
 	// 2-letter code specifying language in case due_string is not written in English.
-	DueLang *string
+	DueLang *string `json:"due_lang,omitempty"`
 	// The responsible user ID (if set, and only for shared tasks).
-	Assignee *int
+	Assignee *int `json:"assignee,omitempty"`
 }
 
 // Creates a new task and returns it.
@@ -139,25 +138,14 @@ func (cl *Client) CreateTask(content string) (*Task, error) {
 
 // Creates a new task with options and returns it.
 func (cl *Client) CreateTaskWithOptions(content string, opts *CreateTaskOptions) (*Task, error) {
-	p := map[string]interface{}{"content": content}
 	var reqID *string
 	if opts != nil {
 		reqID = opts.RequestID
-		addOptionalStringToMap(p, "description", opts.Description)
-		addOptionalIntToMap(p, "project_id", opts.ProjectID)
-		addOptionalIntToMap(p, "section_id", opts.SectionID)
-		addOptionalIntToMap(p, "parent_id", opts.ParentID)
-		addOptionalIntToMap(p, "order", opts.Order)
-		if opts.LabelIDs != nil {
-			ids := strings.Join(intsToStrings(*opts.LabelIDs), ",")
-			addOptionalStringToMap(p, "label_ids", &ids)
-		}
-		addOptionalIntToMap(p, "priority", opts.Priority)
-		addOptionalStringToMap(p, "due_string", opts.DueString)
-		addOptionalStringToMap(p, "due_date", opts.DueDate)
-		addOptionalStringToMap(p, "due_datetime", opts.DueDatetime)
-		addOptionalStringToMap(p, "due_lang", opts.DueLang)
-		addOptionalIntToMap(p, "assignee", opts.Assignee)
+	}
+
+	p := map[string]interface{}{"content": content}
+	if err := toMap(opts, p); err != nil {
+		return nil, err
 	}
 
 	task := Task{}
