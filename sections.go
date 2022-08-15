@@ -110,7 +110,7 @@ func (cl *Client) UpdateSectionWithOptions(id int, name string, opts *UpdateSect
 
 // Options for deleting a section.
 type DeleteSectionOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 }
 
 // Deletes a section.
