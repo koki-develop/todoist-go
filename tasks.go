@@ -205,7 +205,7 @@ func (cl *Client) UpdateTaskWithOptions(id int, opts *UpdateTaskOptions) error {
 
 // Options for closing a task.
 type CloseTaskOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 }
 
 // Closes a task.
