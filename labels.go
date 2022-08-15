@@ -41,15 +41,15 @@ func (cl *Client) GetLabel(id int) (*Label, error) {
 
 // Options for creating a label.
 type CreateLabelOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 
 	// Label order.
-	Order *int
+	Order *int `json:"order,omitempty"`
 	// A numeric ID representing the color of the label icon.
 	// Refer to the id column in the Colors (https://developer.todoist.com/guides/#colors) guide for more info.
-	Color *int
+	Color *int `json:"color,omitempty"`
 	// Whether the label is a favorite (a true or false value).
-	Favorite *bool
+	Favorite *bool `json:"favorite,omitempty"`
 }
 
 // Creates a label.
@@ -59,13 +59,14 @@ func (cl *Client) CreateLabel(name string) (*Label, error) {
 
 // Creates a label with options.
 func (cl *Client) CreateLabelWithOptions(name string, opts *CreateLabelOptions) (*Label, error) {
-	p := map[string]interface{}{"name": name}
 	var reqID *string
 	if opts != nil {
 		reqID = opts.RequestID
-		addOptionalIntToMap(p, "order", opts.Order)
-		addOptionalIntToMap(p, "color", opts.Color)
-		addOptionalBoolToMap(p, "favorite", opts.Favorite)
+	}
+
+	p := map[string]interface{}{"name": name}
+	if err := toMap(opts, p); err != nil {
+		return nil, err
 	}
 
 	label := Label{}

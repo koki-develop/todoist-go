@@ -224,9 +224,9 @@ func TestClient_CreateLabelWithOptions(t *testing.T) {
 				Method: http.MethodPost,
 				Payload: map[string]interface{}{
 					"name":     tt.args.name,
-					"order":    *tt.args.opts.Order,
-					"color":    *tt.args.opts.Color,
-					"favorite": *tt.args.opts.Favorite,
+					"order":    tt.args.opts.Order,
+					"color":    tt.args.opts.Color,
+					"favorite": tt.args.opts.Favorite,
 				},
 				Headers: map[string]string{"Authorization": "Bearer TOKEN", "Content-Type": "application/json", "X-Request-Id": *tt.args.opts.RequestID},
 			}).Return(tt.resp, nil)
