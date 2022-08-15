@@ -132,10 +132,10 @@ func (cl *Client) CreateProjectCommentWithOptions(projectID int, content string,
 
 // Options for creating a comment for a task.
 type CreateTaskCommentOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 
 	// Object for attachment object.
-	Attachment *CreateAttachmentOptions
+	Attachment *CreateAttachmentOptions `json:"attachment,omitempty"`
 }
 
 // Creates a comment for a task.
@@ -145,18 +145,14 @@ func (cl *Client) CreateTaskComment(taskID int, content string) (*Comment, error
 
 // Creates a comment for a task with options.
 func (cl *Client) CreateTaskCommentWithOptions(taskID int, content string, opts *CreateTaskCommentOptions) (*Comment, error) {
-	p := map[string]interface{}{"task_id": taskID, "content": content}
 	var reqID *string
 	if opts != nil {
 		reqID = opts.RequestID
-		if opts.Attachment != nil {
-			a := map[string]string{}
-			addOptionalStringToStringMap(a, "resource_type", opts.Attachment.ResourceType)
-			addOptionalStringToStringMap(a, "file_name", opts.Attachment.FileName)
-			addOptionalStringToStringMap(a, "file_url", opts.Attachment.FileURL)
-			addOptionalStringToStringMap(a, "file_type", opts.Attachment.FileType)
-			p["attachment"] = a
-		}
+	}
+
+	p := map[string]interface{}{"task_id": taskID, "content": content}
+	if err := toMap(opts, p); err != nil {
+		return nil, err
 	}
 
 	cmt := Comment{}
