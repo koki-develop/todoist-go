@@ -253,7 +253,7 @@ func (cl *Client) ReopenTaskWithOptions(id int, opts *ReopenTaskOptions) error {
 
 // Options for deleting a task.
 type DeleteTaskOptions struct {
-	RequestID *string
+	RequestID *string `json:"-"`
 }
 
 // Deletes a task.
